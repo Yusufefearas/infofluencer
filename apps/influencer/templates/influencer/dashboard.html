@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Influencer Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3;
+            padding: 40px;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 800px;
+            margin: auto;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        .info {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hoş Geldin, {{ influencer.first_name }}!</h1>
+        <div class="info">
+            <p><strong>Email:</strong> {{ influencer.email }}</p>
+            <p><strong>Kayıt Tarihi:</strong> {{ influencer.created_at }}</p>
+            <p><strong>Instagram:</strong> {{ influencer.instagram_handle|default:"Bağlı değil" }}</p>
+            <p><strong>YouTube:</strong> {{ influencer.youtube_channel_id|default:"Bağlı değil" }}</p>
+        </div>
+    </div>
+</body>
+</html>

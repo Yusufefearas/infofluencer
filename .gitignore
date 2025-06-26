@@ -1,0 +1,12 @@
+*.pyc
+__pycache__/
+.env
+client_secrets/
+.vscode/
+db.sqlite3
+migrations/
+myenv/
+venv/
+.idea/
+.history/
+statics/

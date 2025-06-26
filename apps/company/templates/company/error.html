@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Hata</title>
+</head>
+<body>
+    <h1>Hata!</h1>
+    {% if error %}
+        <p style="color:red;">Detay: {{ error }}</p>
+    {% else %}
+        <p>Beklenmeyen bir sorun oluştu.</p>
+    {% endif %}
+    <a href="{% url 'company_dashboard' %}">Panele Dön</a>
+</body>
+</html>

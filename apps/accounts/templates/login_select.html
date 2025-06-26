@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Türü Seçimi</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b4d 50%, #1a1a1a 100%);
+            min-height: 100vh;
+            color: #e5e5e5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Dark theme background effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(138, 43, 226, 0.1) 0%, rgba(0, 0, 0, 0.3) 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            box-shadow: 0 12px 40px rgba(138, 43, 226, 0.3);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #8a2be2, #dc143c, #6a1b9a);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            color: #8a2be2;
+        }
+
+        .logo h1 {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #e5e5e5;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #b0b0b0;
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 1.2rem 1.5rem;
+            font-size: 1.1rem;
+            background: rgba(40, 40, 40, 0.8);
+            border: 2px solid rgba(138, 43, 226, 0.3);
+            border-radius: 12px;
+            color: #e5e5e5;
+            outline: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%238a2be2' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 1rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 3rem;
+        }
+
+        select:focus {
+            border-color: #8a2be2;
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+            background-color: rgba(50, 50, 50, 0.9);
+        }
+
+        select:hover {
+            border-color: rgba(138, 43, 226, 0.5);
+            background-color: rgba(45, 45, 45, 0.9);
+        }
+
+        option {
+            background: #2a2a2a;
+            color: #e5e5e5;
+            padding: 0.5rem;
+        }
+
+        .submit-button {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: white;
+            padding: 1.2rem 2.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.6);
+            background: linear-gradient(135deg, #9932cc, #7b1fa2);
+        }
+
+        .submit-button:active {
+            transform: translateY(-1px);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.2);
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .option-card {
+            background: rgba(40, 40, 40, 0.8);
+            border: 2px solid rgba(138, 43, 226, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .option-card:hover {
+            border-color: rgba(138, 43, 226, 0.5);
+            background: rgba(45, 45, 45, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .option-card.selected {
+            border-color: #8a2be2;
+            background: rgba(138, 43, 226, 0.1);
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .option-icon {
+            font-size: 2rem;
+            color: #8a2be2;
+            margin-bottom: 0.5rem;
+        }
+
+        .option-title {
+            font-weight: 600;
+            color: #e5e5e5;
+            margin-bottom: 0.3rem;
+        }
+
+        .option-description {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+            line-height: 1.4;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+            
+            h2 {
+                font-size: 1.6rem;
+            }
+            
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .submit-button {
+                padding: 1rem 2rem;
+                font-size: 1rem;
+            }
+        }
+
+        /* Loading animation */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-user-shield"></i>
+            <h1>Platform</h1>
+        </div>
+        
+        <h2>Select Your Login Type</h2>
+        <p class="subtitle">Please select your account type to proceed</p>
+        
+        <form method="POST" id="loginForm">
+            {% csrf_token %}
+            
+            <div class="options-container">
+                <div class="option-card" onclick="selectOption('company', this)">
+                    <div class="option-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="option-title">Company</div>
+                    <div class="option-description">Log in with your business account</div>
+                </div>
+                
+                <div class="option-card" onclick="selectOption('influencer', this)">
+                    <div class="option-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="option-title">Influencer</div>
+                    <div class="option-description">Log in as an Influencer</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <select name="user_type" id="userType" required style="display: none;">
+                    <option value="">Select</option>
+                    <option value="company">Company</option>
+                    <option value="influencer">Influencer</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="submit-button" id="submitBtn" disabled>
+                <i class="fas fa-arrow-right"></i>
+                Continue
+            </button>
+        </form>
+    </div>
+
+    <script>
+        let selectedType = null;
+
+        function selectOption(type, element) {
+            // Remove selected class from all cards
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked card
+            element.classList.add('selected');
+            
+            // Set the selected type
+            selectedType = type;
+            document.getElementById('userType').value = type;
+            
+            // Enable submit button
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+        }
+
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            if (!selectedType) {
+                e.preventDefault();
+                alert('Lütfen bir giriş türü seçin.');
+                return;
+            }
+            
+            // Add loading animation
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.classList.add('loading');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yönlendiriliyor...';
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '1') {
+                document.querySelector('.option-card').click();
+            } else if (e.key === '2') {
+                document.querySelectorAll('.option-card')[1].click();
+            } else if (e.key === 'Enter' && selectedType) {
+                document.getElementById('loginForm').submit();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+Django>=4.2
+psycopg2-binary
+python-dotenv
+celery
+google-auth
+google-auth-oauthlib
+pytrends
+requests
+gunicorn
+google.analytics
+google-analytics-data
+google-api-python-client

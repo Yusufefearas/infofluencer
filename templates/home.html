@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Infofluencer{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b4d 50%, #1a1a1a 100%);
+            min-height: 100vh;
+            color: #e5e5e5;
+        }
+
+        /* Header Styles */
+        .header {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo h1 {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: #8a2be2;
+        }
+
+        /* Navigation */
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #c0c0c0;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #8a2be2;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #8a2be2;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .auth-button {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        }
+
+        .auth-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.5);
+        }
+
+        .auth-button.secondary {
+            background: linear-gradient(135deg, #dc143c, #b91c3c);
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
+        }
+
+        .auth-button.secondary:hover {
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.5);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #e5e5e5;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-subtitle {
+            color: #b0b0b0;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .welcome-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(40, 40, 40, 0.8);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(138, 43, 226, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.3);
+            border-color: rgba(138, 43, 226, 0.4);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #8a2be2;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e5e5e5;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-description {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Auth Links */
+        .auth-links {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .auth-link {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+            font-size: 1.1rem;
+        }
+
+        .auth-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.5);
+        }
+
+        .auth-link.secondary {
+            background: linear-gradient(135deg, #dc143c, #b91c3c);
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
+        }
+
+        .auth-link.secondary:hover {
+            box-shadow: 0 8px 25px rgba(220, 20, 60, 0.5);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 4rem 3rem;
+            margin-bottom: 4rem;
+            box-shadow: 0 12px 40px rgba(138, 43, 226, 0.3);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a, #dc143c);
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #e5e5e5;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #8a2be2, #dc143c, #6a1b9a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: #b0b0b0;
+            margin-bottom: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #8a2be2, #dc143c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-primary, .cta-secondary {
+            padding: 1.2rem 2.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .cta-primary {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: white;
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.6);
+        }
+
+        .cta-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e5e5e5;
+            border: 2px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .cta-secondary:hover {
+            background: rgba(138, 43, 226, 0.1);
+            border-color: rgba(138, 43, 226, 0.5);
+            transform: translateY(-3px);
+        }
+
+        /* Features Section */
+        .features-section {
+            margin-bottom: 4rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-subtitle {
+            color: #b0b0b0;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card.advanced {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card.advanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, var(--feature-color), var(--feature-color-dark));
+        }
+
+        .feature-card.advanced:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(138, 43, 226, 0.4);
+            border-color: rgba(138, 43, 226, 0.5);
+        }
+
+        .feature-icon.youtube {
+            background: linear-gradient(135deg, #dc143c, #b91c3c);
+            --feature-color: #dc143c;
+            --feature-color-dark: #b91c3c;
+        }
+
+        .feature-icon.ga4 {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            --feature-color: #8a2be2;
+            --feature-color-dark: #6a1b9a;
+        }
+
+        .feature-icon.insight {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            --feature-color: #ff6b35;
+            --feature-color-dark: #f7931e;
+        }
+
+        .feature-icon.automation {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            --feature-color: #28a745;
+            --feature-color-dark: #20c997;
+        }
+
+        .feature-icon.collaboration {
+            background: linear-gradient(135deg, #6f42c1, #e83e8c);
+            --feature-color: #6f42c1;
+            --feature-color-dark: #e83e8c;
+        }
+
+        .feature-icon.export {
+            background: linear-gradient(135deg, #fd7e14, #ffc107);
+            --feature-color: #fd7e14;
+            --feature-color-dark: #ffc107;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+
+        .feature-list li {
+            color: #b0b0b0;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .feature-list i {
+            color: #28a745;
+            font-size: 0.9rem;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            margin-bottom: 4rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(138, 43, 226, 0.3);
+        }
+
+        .pricing-card.featured {
+            border-color: #8a2be2;
+            box-shadow: 0 12px 40px rgba(138, 43, 226, 0.4);
+            transform: scale(1.05);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .pricing-header {
+            margin-bottom: 2rem;
+        }
+
+        .pricing-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e5e5e5;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-price {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 0.2rem;
+        }
+
+        .currency {
+            font-size: 1.2rem;
+            color: #8a2be2;
+            font-weight: 600;
+        }
+
+        .amount {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #8a2be2;
+        }
+
+        .period {
+            font-size: 1rem;
+            color: #b0b0b0;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: #b0b0b0;
+        }
+
+        .pricing-features i.fa-check {
+            color: #28a745;
+        }
+
+        .pricing-features i.fa-times {
+            color: #dc3545;
+        }
+
+        .pricing-button {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .pricing-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.4);
+        }
+
+        .pricing-button.featured {
+            background: linear-gradient(135deg, #dc143c, #b91c3c);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.4);
+        }
+
+        .pricing-button.featured:hover {
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.5);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 4rem 3rem;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(138, 43, 226, 0.3);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #8a2be2, #dc143c, #6a1b9a);
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8a2be2, #dc143c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-subtitle {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-primary.large, .cta-secondary.large {
+            padding: 1.3rem 3rem;
+            font-size: 1.2rem;
+        }
+
+        /* Content Section */
+        .content-section {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow:
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #e5e5e5;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-icon {
+            font-size: 1.5rem;
+            padding: 8px;
+            border-radius: 8px;
+            color: white;
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+        }
+
+        /* Dark theme background effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(138, 43, 226, 0.1) 0%, rgba(0, 0, 0, 0.3) 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2a2a2a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #8a2be2;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6a1b9a;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .welcome-title {
+                font-size: 2rem;
+            }
+            
+            .welcome-features {
+                grid-template-columns: 1fr;
+            }
+            
+            .auth-links {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .welcome-section {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-rocket"></i>
+                <h1>Infofluencer</h1>
+            </div>
+            <nav class="nav-links">
+                <a href="/"><i class="fas fa-home"></i> Home</a>
+                <a href="/accounts/register/" class="auth-button">
+                    <i class="fas fa-user-plus"></i>
+                    Sign Up
+                </a>
+                <a href="/accounts/login/" class="auth-button secondary">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Log In
+                </a>
+            </nav>
+        </div>
+    </header>
+
+<!-- Main Content -->
+<main class="container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="gradient-text">Infofluencer</span> 
+                Real influence. Right match. Powerful growth.
+            </h1>
+            <p class="hero-subtitle">
+                Infofluencer is a global AI-powered influencer matching platform that combines Instagram, YouTube, and Google API data to analyze influencers based on key metrics such as engagement rate, audience quality, demographic alignment, and content performance. With real-time, data-driven insights, brands can quickly identify the most suitable influencers for their target audience, while creators can verify their profiles and join campaigns. Prioritizing transparency, data security, and privacy, Infofluencer is the next-generation solution for brands and influencers seeking powerful and reliable partnerships.
+            </p>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number">10K+</div>
+                    <div class="stat-label">Active Creators</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">1M+</div>
+                    <div class="stat-label">Videos Analyzed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50M+</div>
+                    <div class="stat-label">Engagements Tracked</div>
+                </div>
+            </div>
+
+            <div class="hero-cta">
+                <a href="/accounts/register/" class="cta-primary">
+                    <i class="fas fa-rocket"></i>
+                    Start for Free
+                </a>
+                <a href="#features" class="cta-secondary">
+                    <i class="fas fa-play"></i>
+                    Explore Features
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="section-header">
+            <h2 class="section-title">
+                <span class="section-icon">
+                    <i class="fas fa-magic"></i>
+                </span>
+                Powerful Features
+            </h2>
+            <p class="section-subtitle">
+                All the tools you need to boost your social media success in one place.
+            </p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card advanced">
+                <div class="feature-icon youtube">
+                    <i class="fab fa-youtube"></i>
+                </div>
+                <h3 class="feature-title">YouTube Analytics</h3>
+                <p class="feature-description">
+                    Analyze your channel performance in detail. Track views, engagement, subscriber growth, and demographics.
+                </p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i> Real-time video performance</li>
+                    <li><i class="fas fa-check"></i> Subscriber demographics</li>
+                    <li><i class="fas fa-check"></i> Earnings reports</li>
+                </ul>
+            </div>
+
+            <div class="feature-card advanced">
+                <div class="feature-icon ga4">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3 class="feature-title">Google Analytics 4</h3>
+                <p class="feature-description">
+                    Monitor your website traffic, user behavior, and conversion rates with professional reports.
+                </p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i> E-commerce tracking</li>
+                    <li><i class="fas fa-check"></i> Audience segmentation</li>
+                    <li><i class="fas fa-check"></i> Conversion optimization</li>
+                </ul>
+            </div>
+
+            <div class="feature-card advanced">
+                <div class="feature-icon insight">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="feature-title">AI Powered Insights</h3>
+                <p class="feature-description">
+                    Optimize your content strategy with AI-powered suggestions and predict future trends.
+                </p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i> Content recommendations</li>
+                    <li><i class="fas fa-check"></i> Best posting times</li>
+                    <li><i class="fas fa-check"></i> Trend analysis</li>
+                </ul>
+            </div>
+
+            <div class="feature-card advanced">
+                <div class="feature-icon automation">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h3 class="feature-title">Automation Tools</h3>
+                <p class="feature-description">
+                    Automate routine tasks, save time, and focus on creating great content.
+                </p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i> Automated reporting</li>
+                    <li><i class="fas fa-check"></i> Social media scheduling</li>
+                    <li><i class="fas fa-check"></i> Email notifications</li>
+                </ul>
+            </div>
+
+            <div class="feature-card advanced">
+                <div class="feature-icon collaboration">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="feature-title">Team Collaboration</h3>
+                <p class="feature-description">
+                    Work with your team, assign tasks, and manage projects efficiently.
+                </p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i> Multi-user support</li>
+                    <li><i class="fas fa-check"></i> Role-based permissions</li>
+                    <li><i class="fas fa-check"></i> Workflow management</li>
+                </ul>
+            </div>
+
+            <div class="feature-card advanced">
+                <div class="feature-icon export">
+                    <i class="fas fa-download"></i>
+                </div>
+                <h3 class="feature-title">Advanced Reporting</h3>
+                <p class="feature-description">
+                    Generate professional reports, export data, and share with your clients.
+                </p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i> PDF/Excel export</li>
+                    <li><i class="fas fa-check"></i> White-label reports</li>
+                    <li><i class="fas fa-check"></i> Customizable dashboards</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2 class="cta-title">Start Your Social Media Success Today</h2>
+            <p class="cta-subtitle">
+                Turn your data into smart decisions with a platform trusted by thousands of creators.
+            </p>
+            <div class="cta-buttons">
+                <a href="/accounts/register/" class="cta-primary large">
+                    <i class="fas fa-rocket"></i>
+                    Try Free for 14 Days
+                </a>
+                <a href="/accounts/login/" class="cta-secondary large">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Log In
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

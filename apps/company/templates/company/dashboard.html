@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoFluencer - Influencer Analytics Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .error-display {
+            background: rgba(90, 45, 45, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.4);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .error-display.show {
+            display: block;
+        }
+
+        .error-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+        }
+
+        .error-header i {
+            font-size: 1.5rem;
+        }
+
+        .error-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .error-content {
+            background: rgba(20, 20, 20, 0.5);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #e5e5e5;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #404040;
+            word-break: break-word;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b4d 50%, #1a1a1a 100%);
+            min-height: 100vh;
+            color: #e5e5e5;
+        }
+
+        /* Header Styles */
+        .header {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo h1 {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: #8a2be2;
+        }
+
+        /* Navigation */
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #c0c0c0;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #8a2be2;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #8a2be2;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #dc143c, #b91c3c);
+            border: none;
+            padding: 0.7rem 1.5rem;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.5);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .welcome-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e5e5e5;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            color: #b0b0b0;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .auth-link {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        }
+
+        .auth-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.5);
+        }
+
+        /* Data Overview Grid */
+        .data-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .data-card {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-color-dark));
+        }
+
+        .data-card.ga4 {
+            --accent-color: #8a2be2;
+            --accent-color-dark: #6a1b9a;
+        }
+
+        .data-card.youtube {
+            --accent-color: #dc143c;
+            --accent-color-dark: #b91c3c;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            color: #e5e5e5;
+        }
+
+        .card-icon {
+            font-size: 1.2rem;
+            padding: 8px;
+            border-radius: 8px;
+            color: white;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-color-dark));
+        }
+
+        .card-status {
+            font-size: 0.8rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: #2d5a2d;
+            color: #90ee90;
+        }
+
+        .status-empty {
+            background: #5a4a2d;
+            color: #ffd700;
+        }
+
+        .status-error {
+            background: #5a2d2d;
+            color: #ff6b6b;
+        }
+
+        .card-content {
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .preview-table {
+            width: 100%;
+            font-size: 0.85rem;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+
+        .preview-table th {
+            background: #2a2a2a;
+            padding: 0.6rem;
+            font-weight: 600;
+            color: #b0b0b0;
+            border-bottom: 2px solid #404040;
+            text-align: left;
+        }
+
+        .preview-table td {
+            padding: 0.6rem;
+            border-bottom: 1px solid #404040;
+            color: #c0c0c0;
+        }
+
+        .preview-table tr:hover {
+            background: #353535;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #808080;
+            font-style: italic;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 150px;
+            gap: 0.5rem;
+        }
+
+        .data-summary {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #404040;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .summary-label {
+            font-size: 0.75rem;
+            color: #b0b0b0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .view-more-btn {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-color-dark));
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            align-self: flex-start;
+        }
+
+        .view-more-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(138, 43, 226, 0.4);
+        }
+
+        /* Control Panels */
+        .control-panels {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            margin-bottom: 2rem;
+        }
+
+        .panel {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #e5e5e5;
+        }
+
+        .panel-icon {
+            font-size: 1.5rem;
+            padding: 8px;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .ga4-icon {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+        }
+
+        .youtube-icon {
+            background: linear-gradient(135deg, #dc143c, #b91c3c);
+        }
+
+        .db-icon {
+            background: linear-gradient(135deg, #4b0082, #800080);
+        }
+
+        /* Button Groups */
+        .button-group {
+            display: grid;
+            gap: 0.8rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .action-btn {
+            padding: 0.8rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .ga4-btn {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: white;
+        }
+
+        .youtube-btn {
+            background: linear-gradient(135deg, #dc143c, #b91c3c);
+            color: white;
+        }
+
+        .db-btn {
+            background: linear-gradient(135deg, #4b0082, #800080);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(138, 43, 226, 0.4);
+        }
+
+        /* GA4 Property Input */
+        .property-input-section {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            display: none;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .input-field {
+            flex: 1;
+        }
+
+        .input-field label {
+            display: block;
+            font-weight: 600;
+            color: #e5e5e5;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-field input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #404040;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            background: #2a2a2a;
+            color: #e5e5e5;
+        }
+
+        .input-field input:focus {
+            outline: none;
+            border-color: #8a2be2;
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+        }
+
+        /* Results Section */
+        .results-section {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+            text-align: left;
+            border-bottom: 2px solid #404040;
+        }
+
+        .data-table td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #404040;
+            color: #c0c0c0;
+        }
+
+        .data-table tr:hover {
+            background: #353535;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #2a2a2a;
+        }
+
+        /* Messages */
+        .message {
+            padding: 1rem 1.5rem;
+            background: #2d5a2d;
+            color: #90ee90;
+            border: 1px solid #4a8a4a;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #32cd32;
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+            position: relative;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid #404040;
+            border-top: 2px solid #8a2be2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .control-panels, .data-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .auth-links {
+                justify-content: center;
+            }
+
+            .data-overview {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Dark theme specific adjustments */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(138, 43, 226, 0.1) 0%, rgba(0, 0, 0, 0.3) 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Scrollbar styling for dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2a2a2a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #8a2be2;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6a1b9a;
+        }
+        .success-alert {
+        background: rgba(45, 90, 45, 0.2);
+            color: #90ee90;
+            border-left: 4px solid #32cd32;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            animation: slideInSuccess 0.3s ease-out, fadeOutSuccess 0.5s ease-out 4.5s forwards;
+            box-shadow: 0 4px 12px rgba(50, 205, 50, 0.2);
+        }
+
+        .success-icon {
+            font-size: 1.2rem;
+            margin-top: 0.1rem;
+            flex-shrink: 0;
+        }
+
+        .success-content {
+            flex: 1;
+        }
+
+        .success-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .success-message {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            opacity: 0.9;
+        }
+
+        .success-close {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0.2rem;
+            margin-left: 0.5rem;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-close:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        @keyframes slideInSuccess {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOutSuccess {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .success-alert {
+                padding: 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .success-title {
+                font-size: 0.95rem;
+            }
+            
+            .success-message {
+                font-size: 0.85rem;
+            }
+        }
+            /* City Preview Styles */
+        .city-preview, .age-preview {
+            padding: 1rem;
+        }
+
+        .city-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .city-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid #8a2be2;
+        }
+
+        .city-rank {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #8a2be2;
+            min-width: 30px;
+        }
+
+        .city-info {
+            flex: 1;
+        }
+
+        .city-name {
+            font-weight: 600;
+            color: #e5e5e5;
+            margin-bottom: 0.2rem;
+        }
+
+        .city-users {
+            font-size: 0.85rem;
+            color: #b0b0b0;
+        }
+
+        /* Age Preview Styles */
+        .age-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .age-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .age-label {
+            font-weight: 600;
+            color: #e5e5e5;
+            font-size: 0.9rem;
+        }
+
+        .age-progress {
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+        }
+
+        .age-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.8s ease;
+        }
+
+        .age-percentage {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .age-time {
+            font-size: 0.8rem;
+            color: #b0b0b0;
+            text-align: right;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .city-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .city-rank {
+                align-self: flex-end;
+            }
+        }
+        .age-label-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .age-total {
+        font-weight: bold;
+        color: #dc143c;
+        font-size: 1rem;
+    }
+
+    .gender-breakdown {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .male-stat {
+        color: #4A90E2;
+        font-weight: 600;
+    }
+
+    .female-stat {
+        color: #E94B7D;
+        font-weight: 600;
+    }
+
+    .age-progress {
+        position: relative;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        height: 16px;
+        overflow: hidden;
+        margin-bottom: 0.3rem;
+    }
+
+    .age-fill {
+        height: 100%;
+        border-radius: 10px;
+        transition: width 0.8s ease;
+    }
+
+    /* Summary improvements */
+    .data-summary {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid #404040;
+    }
+
+    .summary-item {
+        text-align: center;
+        flex: 1;
+    }
+
+    .summary-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--accent-color);
+        margin-bottom: 0.2rem;
+    }
+
+    .summary-label {
+        font-size: 0.7rem;
+        color: #b0b0b0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .youtube-enhanced {
+    background: linear-gradient(135deg, rgba(40, 40, 40, 0.95), rgba(30, 30, 30, 0.95));
+    border: 1px solid rgba(255, 68, 68, 0.3);
+    position: relative;
+}
+
+.youtube-enhanced::before {
+    background: linear-gradient(90deg, #ff0000, #cc0000, #ff4444);
+    height: 5px;
+}
+
+.age-demographics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.age-card {
+    background: rgba(255, 68, 68, 0.1);
+    border: 1px solid rgba(255, 68, 68, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.age-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 68, 68, 0.2);
+}
+
+.age-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.age-title {
+    font-weight: 700;
+    color: #ff4444;
+    font-size: 1rem;
+}
+
+.age-percent {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #ff0000;
+}
+
+.enhanced-progress {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 0.8rem;
+}
+
+.enhanced-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff4444, #ff0000);
+    border-radius: 8px;
+    transition: width 1.2s ease-out;
+    position: relative;
+}
+
+.enhanced-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shine 2s infinite;
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.gender-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+}
+
+.male-enhanced {
+    color: #60A5FA;
+    font-weight: 600;
+}
+
+.female-enhanced {
+    color: #F87171;
+    font-weight: 600;
+}
+
+.youtube-summary {
+    background: rgba(255, 68, 68, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.summary-stat {
+    text-align: center;
+}
+
+.summary-number {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #ff4444;
+    margin-bottom: 0.3rem;
+}
+
+.summary-text {
+    font-size: 0.8rem;
+    color: #b0b0b0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+    </style>
+
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo">
+            <i class="fas fa-chart-line"></i>
+            <h1>InfoFluencer</h1>
+        </div>
+
+        <nav class="nav-links">
+            <a href="#"><i class="fas fa-home"></i> Home</a>
+            <a href="#"><i class="fas fa-users"></i> Audience</a>
+            <a href="#"><i class="fas fa-handshake"></i> Influencer Matching</a>
+
+            <form action="{% url 'company_logout' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<!-- Main Container -->
+<div class="container">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <h2 class="welcome-title">
+            <i class="fas fa-user-circle"></i> 
+            Welcome, {{ user.first_name }}!
+        </h2>
+        <p class="welcome-subtitle">
+            View your influencer analytics and track audience alignment.
+        </p>
+
+        {% if user.is_authenticated %}
+            <div class="auth-links">
+                <a href="{% url 'ga4_auth_start' %}" class="auth-link">
+                    <i class="fab fa-google"></i>
+                    Connect Google Analytics
+                </a>
+                <a href="{% url 'youtube_auth_start' %}" class="auth-link">
+                    <i class="fab fa-youtube"></i>
+                    Connect YouTube Account
+                </a>
+                <a href="#" class="auth-link">
+                    <i class="fab fa-instagram"></i>
+                    Connect Instagram Account
+                </a>
+            </div>
+        {% else %}
+            <p style="color: #e74c3c; font-weight: 600;">
+                <i class="fas fa-exclamation-triangle"></i>
+                Please log in.
+            </p>
+        {% endif %}
+
+        {% if error %}
+        <div class="error-display show">
+            <div class="error-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div class="error-title">An Error Occurred</div>
+            </div>
+            <div class="error-content">{{ error }}</div>
+        </div>
+        {% endif %}
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message">
+                    <i class="fas fa-check-circle"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if success_message %}
+        <div class="success-alert">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="success-content">
+                <div class="success-title">Success!</div>
+                <div class="success-message">{{ success_message }}</div>
+            </div>
+            <button class="success-close" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Data Overview Cards -->
+    <div class="data-overview">
+        <div class="data-card ga4" id="ga4-overview">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-icon">
+                        <i class="fab fa-google"></i>
+                    </div>
+                    Google Analytics
+                </div>
+                <div class="card-status status-empty" id="ga4-status">Loading...</div>
+            </div>
+            <div class="card-content" id="ga4-content">
+                <div class="empty-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Loading data...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-card youtube" id="youtube-overview">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-icon">
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                    YouTube Analytics
+                </div>
+                <div class="card-status status-empty" id="youtube-status">Loading...</div>
+            </div>
+            <div class="card-content" id="youtube-content">
+                <div class="empty-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Loading data...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GA4 Property Input Section -->
+    <div id="ga4-panel" class="property-input-section">
+        <div class="panel-header">
+            <div class="panel-icon ga4-icon">
+                <i class="fab fa-google"></i>
+            </div>
+            <h3 class="panel-title">Google Analytics Property ID</h3>
+        </div>
+
+        <div class="input-group">
+            <div class="input-field">
+                <label for="propertyIdInput">Property ID</label>
+                <input type="text" id="propertyIdInput" placeholder="Enter GA4 Property ID (e.g. 452479042)">
+            </div>
+            <button onclick="savePropertyId()" class="action-btn ga4-btn">
+                <i class="fas fa-save"></i>
+                Save
+            </button>
+        </div>
+        <div id="rapor-alani"></div>
+    </div>
+
+    <!-- Control Panels -->
+    <div class="control-panels">
+        <!-- GA4 API Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-icon ga4-icon">
+                    <i class="fab fa-google"></i>
+                </div>
+                <h3 class="panel-title">Google Analytics API</h3>
+            </div>
+            <p style="color: #64748b; margin-bottom: 1.5rem;">
+                Pull live data and save to the database
+            </p>
+            <div class="button-group">
+                {% for veri in veri_listesi %}
+                    <button onclick="runReport('{{ veri }}')" class="action-btn ga4-btn">
+                        <i class="fas fa-download"></i>
+                        {{ veri|capfirst }}
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- YouTube API Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-icon youtube-icon">
+                    <i class="fab fa-youtube"></i>
+                </div>
+                <h3 class="panel-title">YouTube API</h3>
+            </div>
+            <p style="color: #64748b; margin-bottom: 1.5rem;">
+                Pull YouTube data live
+            </p>
+            <div class="button-group">
+                {% for veri in youtube_veri_listesi %}
+                    <button onclick="runYoutubeReport('{{ veri }}')" class="action-btn youtube-btn">
+                        <i class="fab fa-youtube"></i>
+                        {{ veri|capfirst }}
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- GA4 Database Reports Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-icon db-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h3 class="panel-title">GA4 Database Reports</h3>
+            </div>
+            <p style="color: #64748b; margin-bottom: 1.5rem;">
+                Generate reports from saved GA4 data
+            </p>
+            <div class="button-group">
+                {% for veri in veri_listesi %}
+                    <button onclick="runDbReport('{{ veri }}')" class="action-btn db-btn">
+                        <i class="fas fa-chart-bar"></i>
+                        {{ veri|capfirst }}
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- YouTube Database Reports -->
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-icon youtube-icon">
+                <i class="fab fa-youtube"></i>
+            </div>
+            <h3 class="panel-title">YouTube Database Reports</h3>
+        </div>
+        <p style="color: #64748b; margin-bottom: 1.5rem;">
+            Generate reports from saved YouTube data
+        </p>
+        <div class="button-group">
+            <button onclick="getSavedReport('trafficSource')" class="action-btn youtube-btn">
+                <i class="fas fa-external-link-alt"></i>
+                Traffic Source
+            </button>
+            <button onclick="getSavedReport('ageGroup')" class="action-btn youtube-btn">
+                <i class="fas fa-users"></i>
+                Age Group
+            </button>
+            <button onclick="getSavedReport('deviceType')" class="action-btn youtube-btn">
+                <i class="fas fa-mobile-alt"></i>
+                Device Type
+            </button>
+            <button onclick="getSavedReport('topSubscribers')" class="action-btn youtube-btn">
+                <i class="fas fa-crown"></i>
+                Top Subscribers
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section">
+        <div class="panel-header">
+            <div class="panel-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                <i class="fas fa-table"></i>
+            </div>
+            <h3 class="panel-title">Detailed Data View</h3>
+        </div>
+
+        <div id="rapor-tablosu" class="table-container">
+            <p style="text-align: center; color: #64748b; padding: 2rem;">
+                <i class="fas fa-info-circle"></i>
+                Select a button above to view detailed data
+            </p>
+        </div>
+
+        <!-- Hidden table for backward compatibility -->
+        <table id="reportTable" style="display: none;">
+            <thead>
+                <tr id="tableHeader"></tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+
+<script>
+    // Global data storage
+    let cachedData = {
+        ga4: {},
+        youtube: {}
+    };
+
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch("/company/check-ga4-token/")
+            .then(res => res.json())
+            .then(data => {
+                if (data.has_token) {
+                    document.getElementById("ga4-panel").style.display = "block";
+                }
+            });
+        
+        // İlk açılışta otomatik veri yükleme
+        fetch("/company/get_initial_report_status/")
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success") {
+                    console.log("🚀 Otomatik yüklenecek GA4 verileri:", data.ga4);
+                    console.log("🚀 Otomatik yüklenecek YouTube verileri:", data.youtube);
+
+                    // Load overview data
+                    loadOverviewData(data);
+                }
+            })
+            .catch(err => {
+                console.error("⛔ Initial report fetch hatası:", err);
+                updateOverviewStatus('ga4', 'error', 'Bağlantı hatası');
+                updateOverviewStatus('youtube', 'error', 'Bağlantı hatası');
+            });
+    });
+
+    function loadOverviewData(initialData) {
+        // Load GA4 overview
+        if (initialData.ga4 && initialData.ga4.length > 0) {
+            Promise.all(initialData.ga4.map(type => 
+                fetch(`/company/run-db-report/?type=${type}`)
+                    .then(res => res.json())
+                    .then(data => ({ type, data }))
+            )).then(results => {
+                processGA4Overview(results);
+            }).catch(err => {
+                updateOverviewStatus('ga4', 'error', 'Yükleme hatası');
+            });
+        } else {
+            updateOverviewStatus('ga4', 'empty', 'Veri bulunamadı');
+        }
+
+        // Load YouTube overview
+        if (initialData.youtube && initialData.youtube.length > 0) {
+            Promise.all(initialData.youtube.map(type => 
+                fetch(`/company/get_saved_report_data/?type=${type}`)
+                    .then(res => res.json())
+                    .then(data => ({ type, data }))
+            )).then(results => {
+                processYouTubeOverview(results);
+            }).catch(err => {
+                updateOverviewStatus('youtube', 'error', 'Yükleme hatası');
+            });
+        } else {
+            updateOverviewStatus('youtube', 'empty', 'Veri bulunamadı');
+        }
+    }
+
+function processGA4Overview(results) {
+        let totalRecords = 0;
+        let hasData = false;
+        let previewData = [];
+
+        results.forEach(result => {
+            // Sadece city verisi için kontrol
+            if (result.type === "city" && result.data.status === "success" && result.data.data && result.data.data.length > 0) {
+                hasData = true;
+                totalRecords += result.data.data.length;
+                if (previewData.length < 5) { // Daha fazla önizleme göster
+                    previewData = previewData.concat(result.data.data.slice(0, 5 - previewData.length));
+                }
+                cachedData.ga4[result.type] = result.data.data;
+            }
+        });
+
+        if (hasData) {
+            updateOverviewStatus('ga4', 'success', `${totalRecords} şehir verisi`);
+            renderCityPreview('ga4', previewData, totalRecords);
+        } else {
+            updateOverviewStatus('ga4', 'empty', 'Şehir verisi bulunamadı');
+        }
+    }
+
+    function processYouTubeOverview(results) {
+        let totalRecords = 0;
+        let hasData = false;
+        let previewData = [];
+
+        results.forEach(result => {
+            // Sadece ageGroup verisi için kontrol
+            if (result.type === "ageGroup" && result.data.status === "success" && result.data.data && result.data.data.length > 0) {
+                hasData = true;
+                totalRecords += result.data.data.length;
+                if (previewData.length < 5) {
+                    previewData = previewData.concat(result.data.data.slice(0, 5 - previewData.length));
+                }
+                cachedData.youtube[result.type] = result.data.data;
+            }
+        });
+
+        if (hasData) {
+            updateOverviewStatus('youtube', 'success', `${totalRecords} yaş grubu verisi`);
+            renderAgePreview('youtube', previewData, totalRecords);
+        } else {
+            updateOverviewStatus('youtube', 'empty', 'Yaş grubu verisi bulunamadı');
+        }
+    }
+
+    function updateOverviewStatus(platform, status, text) {
+        const statusElement = document.getElementById(`${platform}-status`);
+        if (statusElement) {
+            statusElement.className = `card-status status-${status}`;
+            statusElement.textContent = text;
+        }
+    }
+
+        // GA4 City verisi için özel önizleme
+    function renderCityPreview(platform, data, totalRecords) {
+    const contentElement = document.getElementById(`${platform}-content`);
+    if (!contentElement || !data || data.length === 0) return;
+
+    let html = `
+        <div class="city-preview">
+            <h4 style="color: #8a2be2; margin-bottom: 1rem; font-size: 1rem;">
+                <i class="fas fa-map-marker-alt"></i> Most Popular Cities
+            </h4>
+            <div class="city-list">
+    `;
+        
+    // Sort cities by users/sessions count
+    const sortedData = data.sort((a, b) => (b.sessions || b.users || 0) - (a.sessions || a.users || 0));
+        
+    sortedData.slice(0, 7).forEach((row, index) => {
+        const cityName = row.city || row.City || 'Unknown City';
+        const userCount = row.users || row.Users || row.sessions || row.Sessions || 0;
+            
+        html += `
+            <div class="city-item">
+                <div class="city-rank">#${index + 1}</div>
+                <div class="city-info">
+                    <div class="city-name">${cityName}</div>
+                    <div class="city-users">${userCount} users</div>
+                </div>
+            </div>
+        `;
+    });
+        
+    html += `
+            </div>
+            <div class="data-summary">
+                <div class="summary-item">
+                    <div class="summary-value">${totalRecords}</div>
+                    <div class="summary-label">Total Cities</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">${data.reduce((sum, item) => sum + (item.users || item.Users || 0), 0)}</div>
+                    <div class="summary-label">Total Users</div>
+                </div>
+            </div>
+            <button class="view-more-btn" onclick="showDetailedView('${platform}')">
+                <i class="fas fa-map"></i> View All Cities
+            </button>
+        </div>
+    `;
+        
+    contentElement.innerHTML = html;
+    }
+    function renderAgePreview(platform, data, totalRecords) {
+        const contentElement = document.getElementById(`${platform}-content`);
+        if (!contentElement || !data || data.length === 0) return;
+
+        console.log("YouTube Age Data:", data);
+
+        // Group data by age groups
+        const ageGroups = {};
+        
+        data.forEach(row => {
+            const ageGroup = row.age_group;
+            const percentage = parseFloat(row.viewer_percentage || 0);
+            
+            if (!ageGroups[ageGroup]) {
+                ageGroups[ageGroup] = {
+                    total_percentage: 0,
+                    male_percentage: 0,
+                    female_percentage: 0
+                };
+            }
+            
+            ageGroups[ageGroup].total_percentage += percentage;
+            
+            if (row.gender === 'male') {
+                ageGroups[ageGroup].male_percentage += percentage;
+            } else if (row.gender === 'female') {
+                ageGroups[ageGroup].female_percentage += percentage;
+            }
+        });
+
+        // English translation
+        const translateAgeGroup = (ageGroup) => {
+            const translations = {
+                'age13-17': '13-17 Years',
+                'age18-24': '18-24 Years',
+                'age25-34': '25-34 Years', 
+                'age35-44': '35-44 Years',
+                'age45-54': '45-54 Years',
+                'age55-64': '55-64 Years',
+                'age65-': '65+ Years'
+            };
+            return translations[ageGroup] || ageGroup;
+        };
+
+        // Show ALL age groups
+        const sortedAgeGroups = Object.entries(ageGroups)
+            .sort(([,a], [,b]) => b.total_percentage - a.total_percentage);
+
+        let html = `
+            <div class="age-preview youtube-enhanced">
+                <h4 style="color: #ff4444; margin-bottom: 1.5rem; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-chart-pie"></i> 
+                    Age Demographics
+                </h4>
+                <div class="age-demographics">
+        `;
+        
+        if (sortedAgeGroups.length === 0) {
+            html += `
+                <div style="grid-column: 1/-1; text-align: center; color: #ffa500; padding: 2rem;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p>No age group data found</p>
+                </div>
+            `;
+        } else {
+            // Show ALL age groups
+            sortedAgeGroups.forEach(([ageGroup, data]) => {
+                const ageGroupEN = translateAgeGroup(ageGroup);
+                const totalPercent = data.total_percentage.toFixed(1);
+                const malePercent = data.male_percentage.toFixed(1);
+                const femalePercent = data.female_percentage.toFixed(1);
+                
+                html += `
+                    <div class="age-card">
+                        <div class="age-card-header">
+                            <span class="age-title">${ageGroupEN}</span>
+                            <span class="age-percent">${totalPercent}%</span>
+                        </div>
+                        <div class="enhanced-progress">
+                            <div class="enhanced-fill" style="width: ${Math.min(totalPercent * 2, 100)}%;"></div>
+                        </div>
+                        <div class="gender-stats">
+                            <span class="male-enhanced">♂ ${malePercent}%</span>
+                            <span class="female-enhanced">♀ ${femalePercent}%</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        // Total statistics
+        const totalMale = data.filter(item => item.gender === 'male')
+            .reduce((sum, item) => sum + parseFloat(item.viewer_percentage || 0), 0);
+        const totalFemale = data.filter(item => item.gender === 'female')
+            .reduce((sum, item) => sum + parseFloat(item.viewer_percentage || 0), 0);
+        
+        html += `
+                </div>
+                <div class="youtube-summary">
+                    <div class="summary-stat">
+                        <div class="summary-number">${Object.keys(ageGroups).length}</div>
+                        <div class="summary-text">Age Groups</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-number">${totalMale.toFixed(1)}%</div>
+                        <div class="summary-text">Male Viewers</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-number">${totalFemale.toFixed(1)}%</div>
+                        <div class="summary-text">Female Viewers</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-number">${totalRecords}</div>
+                        <div class="summary-text">Total Records</div>
+                    </div>
+                </div>
+                <button class="view-more-btn" onclick="showDetailedView('${platform}')" style="margin-top: 1rem;">
+                    <i class="fas fa-analytics"></i> Detailed Analysis
+                </button>
+            </div>
+        `;
+        
+        contentElement.innerHTML = html;
+    }
+    function showDetailedView(platform) {
+        const allData = Object.values(cachedData[platform]).flat();
+        if (allData.length > 0) {
+            renderTable(allData, `${platform.toUpperCase()} Detaylı Görünüm`);
+            document.getElementById("rapor-tablosu").scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    function getSavedReport(type) {
+        showLoading();
+        fetch(`/company/get_saved_report_data/?type=${type}`)
+        .then(response => response.json())
+        .then(data => {
+            hideLoading();
+            if (data.status === "success") {
+                console.log("✅ Gelen veri:", data.data);
+                renderTable(data.data, `YouTube ${type} Raporu`);
+            } else {
+                showError("❌ Hata: " + data.error);
+            }
+        })
+        .catch(err => {
+            hideLoading();
+            showError("⛔ Bağlantı hatası");
+            console.error(err);
+        });
+    }
+
+    function renderTable(data, title) {
+        const tableContainer = document.getElementById("rapor-tablosu");
+        
+        if (data.length === 0) {
+            tableContainer.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: #64748b;">
+                    <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <p>Veri bulunamadı</p>
+                </div>
+            `;
+            return;
+        }
+
+        const keys = Object.keys(data[0]);
+        let html = `
+            <div style="margin-bottom: 1rem;">
+                <h4 style="color: #1e293b; font-size: 1.1rem;">
+                    <i class="fas fa-chart-bar"></i> ${title}
+                </h4>
+                <p style="color: #64748b; font-size: 0.9rem;">${data.length} kayıt bulundu</p>
+            </div>
+            <div style="overflow-x: auto; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+        `;
+
+        keys.forEach(key => {
+            html += `<th>${key}</th>`;
+        });
+
+        html += `
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        data.forEach(row => {
+            html += "<tr>";
+            keys.forEach(key => {
+                html += `<td>${row[key] || '-'}</td>`;
+            });
+            html += "</tr>";
+        });
+
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        tableContainer.innerHTML = html;
+    }
+
+    function savePropertyId() {
+        const propertyId = document.getElementById("propertyIdInput").value;
+        const button = event.target;
+        
+        button.classList.add('loading');
+
+        fetch("/company/save-property-id/", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `property_id=${propertyId}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            button.classList.remove('loading');
+            if (data.status === "kaydedildi") {
+                const area = document.getElementById("rapor-alani");
+                area.innerHTML = `
+                    <div class="message" style="margin-top: 1rem;">
+                        <i class="fas fa-check-circle"></i>
+                        Property ID başarıyla kaydedildi.
+                    </div>
+                `;
+            } else {
+                showError("Hata: " + data.error);
+            }
+        })
+        .catch(err => {
+            button.classList.remove('loading');
+            showError("Bağlantı hatası");
+        });
+    }
+
+    function runReport(veriTipi) {
+        showLoading();
+        fetch(`/company/run-custom-report/?type=${veriTipi}`)
+            .then(res => res.json())
+            .then(data => {
+                hideLoading();
+                console.log("🧪 Gelen veri:", data);
+
+                if (data.status === "success" && Array.isArray(data.data)) {
+                    showSuccess("✅ " + veriTipi + " verisi başarıyla çekildi.");
+                    renderTable(data.data, `GA4 ${veriTipi} Raporu`);
+                } else {
+                    showError("❌ Beklenen veri formatı alınamadı.");
+                }
+            })
+            .catch(err => {
+                hideLoading();
+                showError("⛔ Hata oluştu");
+                console.error(err);
+            });
+    }
+
+    function runYoutubeReport(veriTipi) {
+        showLoading();
+        fetch(`/company/run-youtube-report/?type=${veriTipi}`)
+            .then(res => res.json())
+            .then(data => {
+                hideLoading();
+
+                if (data.status === "error") {
+                    let errMsg = "❌ Bilinmeyen bir hata oluştu.";
+                    if (Array.isArray(data.data) && data.data[0]?.error) {
+                        errMsg = "❌ Hata: " + data.data[0].error;
+                    } else if (data.message) {
+                        errMsg = "❌ " + data.message;
+                    }
+                    showError(errMsg);
+                    return;
+                }
+
+                if (data.status === "success" && Array.isArray(data.data)) {
+                    renderTable(data.data, `YouTube ${data.type} Raporu`);
+                } else {
+                    showError("❌ Beklenmeyen veri yapısı.");
+                }
+            })
+            .catch(err => {
+                hideLoading();
+                showError("⛔ Fetch sırasında hata oluştu.");
+                console.error(err);
+            });
+    }
+
+    function runDbReport(veriTipi) {
+        showLoading();
+        fetch(`/company/run-db-report/?type=${veriTipi}`)
+            .then(res => res.json())
+            .then(data => {
+                hideLoading();
+
+                if (data.status === "error") {
+                    let errMsg = "❌ Hata oluştu.";
+                    if (data.message) {
+                        errMsg = "❌ " + data.message;
+                    }
+                    showError(errMsg);
+                    return;
+                }
+
+                if (data.status === "success" && Array.isArray(data.data)) {
+                    const rows = data.data;
+
+                    if (rows.length === 0) {
+                        document.getElementById("rapor-tablosu").innerHTML = `
+                            <div style="text-align: center; padding: 2rem; color: #f39c12;">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                                <p>⚠️ ${data.type} tablosunda hiç veri bulunamadı.</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    renderTable(rows, `GA4 ${data.type} Raporu`);
+                } else {
+                    showError("❌ Beklenmeyen veri yapısı.");
+                }
+            })
+            .catch(err => {
+                hideLoading();
+                showError("⛔ Fetch sırasında hata oluştu.");
+                console.error(err);
+            });
+    }
+
+    function showLoading() {
+        const tableContainer = document.getElementById("rapor-tablosu");
+        tableContainer.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: #667eea;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <p>Yükleniyor...</p>
+            </div>
+        `;
+    }
+
+    function hideLoading() {
+        // Boşaltma işlemi yok çünkü renderTable çağırılıyor.
+        // Eğer istersen buraya da default mesaj koyabilirsin veya boş bırakabilirsin.
+    }
+
+    function showError(message) {
+        const tableContainer = document.getElementById("rapor-tablosu");
+        tableContainer.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: #e74c3c;">
+                <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <p>${message}</p>
+            </div>
+        `;
+    }
+
+    function showSuccess(message) {
+        const tableContainer = document.getElementById("rapor-tablosu");
+        tableContainer.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: #28a745;">
+                <i class="fas fa-check-circle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <p>${message}</p>
+            </div>
+        `;
+    }
+</script>
+
+</body>
+</html>
