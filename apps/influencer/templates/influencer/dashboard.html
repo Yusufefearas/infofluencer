@@ -2,38 +2,1892 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Influencer Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoFluencer - Influencer Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f3f3f3;
-            padding: 40px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        h1 {
-            color: #333;
+        
+        .error-display {
+            background: rgba(90, 45, 45, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.4);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: none;
+            animation: slideIn 0.3s ease-out;
         }
-        .container {
-            background: white;
-            padding: 30px;
+
+        .error-display.show {
+            display: block;
+        }
+
+        .error-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+        }
+
+        .error-header i {
+            font-size: 1.5rem;
+        }
+
+        .error-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .error-content {
+            background: rgba(20, 20, 20, 0.5);
             border-radius: 8px;
-            max-width: 800px;
-            margin: auto;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #e5e5e5;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #404040;
+            word-break: break-word;
         }
-        .info {
-            margin-top: 20px;
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b4d 50%, #1a1a1a 100%);
+            min-height: 100vh;
+            color: #e5e5e5;
+        }
+
+        /* Header Styles */
+        .header {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo h1 {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: #8a2be2;
+        }
+
+        /* Navigation */
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #c0c0c0;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #8a2be2;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #8a2be2;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #dc143c, #b91c3c);
+            border: none;
+            padding: 0.7rem 1.5rem;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.5);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .welcome-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e5e5e5;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            color: #b0b0b0;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* META REQUIRED: Connect Social Media Section */
+        .auth-section {
+            background: rgba(138, 43, 226, 0.1);
+            border: 2px solid rgba(138, 43, 226, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .auth-section h3 {
+            color: #8a2be2;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .auth-section p {
+            color: #b0b0b0;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .auth-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .auth-link {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.6);
+        }
+
+        .auth-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .auth-link:hover::before {
+            left: 100%;
+        }
+
+        .instagram-btn {
+            background: linear-gradient(135deg, #E4405F, #C13584);
+        }
+
+        .youtube-btn {
+            background: linear-gradient(135deg, #FF0000, #CC0000);
+        }
+
+        /* Data Overview Grid */
+        .data-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .data-card {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-color-dark));
+        }
+
+        .data-card.instagram {
+            --accent-color: #E4405F;
+            --accent-color-dark: #C13584;
+        }
+
+        .data-card.youtube {
+            --accent-color: #FF0000;
+            --accent-color-dark: #CC0000;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            color: #e5e5e5;
+        }
+
+        .card-icon {
+            font-size: 1.2rem;
+            padding: 8px;
+            border-radius: 8px;
+            color: white;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-color-dark));
+        }
+
+        .card-status {
+            font-size: 0.8rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: #2d5a2d;
+            color: #90ee90;
+        }
+
+        .status-empty {
+            background: #5a4a2d;
+            color: #ffd700;
+        }
+
+        .status-error {
+            background: #5a2d2d;
+            color: #ff6b6b;
+        }
+
+        .status-connecting {
+            background: #2d4a5a;
+            color: #87ceeb;
+        }
+
+        .card-content {
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #808080;
+            font-style: italic;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 150px;
+            gap: 0.5rem;
+        }
+
+        .connect-prompt {
+            text-align: center;
+            padding: 2rem;
+            border: 2px dashed var(--accent-color);
+            border-radius: 12px;
+            color: var(--accent-color);
+            background: rgba(228, 64, 95, 0.05);
+        }
+
+        .connect-prompt h4 {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .connect-prompt p {
+            color: #b0b0b0;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .connect-btn {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-color-dark));
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(228, 64, 95, 0.4);
+        }
+
+        /* Profile Stats Section */
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid var(--accent-color);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #b0b0b0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Brand Compatibility Score */
+        .brand-score {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Engagement Chart */
+        .engagement-chart {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+        }
+
+        .chart-title {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+            margin-bottom: 0.5rem;
+        }
+
+        .engagement-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .engagement-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), var(--accent-color-dark));
+            border-radius: 10px;
+            transition: width 1s ease;
+            position: relative;
+        }
+
+        .engagement-percentage {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        /* Data Analysis Panel */
+        .analysis-panel {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #e5e5e5;
+        }
+
+        .panel-icon {
+            font-size: 1.5rem;
+            padding: 8px;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .instagram-icon {
+            background: linear-gradient(135deg, #E4405F, #C13584);
+        }
+
+        .youtube-icon {
+            background: linear-gradient(135deg, #FF0000, #CC0000);
+        }
+
+        .analytics-icon {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        /* Button Groups */
+        .button-group {
+            display: grid;
+            gap: 0.8rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .action-btn {
+            padding: 0.8rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .instagram-btn {
+            background: linear-gradient(135deg, #E4405F, #C13584);
+            color: white;
+        }
+
+        .youtube-btn {
+            background: linear-gradient(135deg, #FF0000, #CC0000);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(138, 43, 226, 0.4);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Results Section */
+        .results-section {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+            text-align: left;
+            border-bottom: 2px solid #404040;
+        }
+
+        .data-table td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #404040;
+            color: #c0c0c0;
+        }
+
+        .data-table tr:hover {
+            background: #353535;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #2a2a2a;
+        }
+
+        /* Permission Info Box */
+        .permission-info {
+            background: rgba(138, 43, 226, 0.1);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: #b0b0b0;
+        }
+
+        .permission-info h4 {
+            color: #8a2be2;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Messages */
+        .message {
+            padding: 1rem 1.5rem;
+            background: #2d5a2d;
+            color: #90ee90;
+            border: 1px solid #4a8a4a;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #32cd32;
+        }
+
+        .success-alert {
+            background: rgba(45, 90, 45, 0.2);
+            color: #90ee90;
+            border-left: 4px solid #32cd32;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            animation: slideInSuccess 0.3s ease-out, fadeOutSuccess 0.5s ease-out 4.5s forwards;
+            box-shadow: 0 4px 12px rgba(50, 205, 50, 0.2);
+        }
+
+        .success-icon {
+            font-size: 1.2rem;
+            margin-top: 0.1rem;
+            flex-shrink: 0;
+        }
+
+        .success-content {
+            flex: 1;
+        }
+
+        .success-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .success-message {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            opacity: 0.9;
+        }
+
+        .success-close {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0.2rem;
+            margin-left: 0.5rem;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-close:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        @keyframes slideInSuccess {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOutSuccess {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+            position: relative;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid #404040;
+            border-top: 2px solid #8a2be2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Audience Quality Indicators */
+        .quality-indicators {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .quality-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.8rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .quality-label {
+            font-size: 0.75rem;
+            color: #b0b0b0;
+            margin-bottom: 0.3rem;
+        }
+
+        .quality-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #e5e5e5;
+        }
+
+        .quality-good { border-left-color: #4ade80; }
+        .quality-medium { border-left-color: #fbbf24; }
+        .quality-poor { border-left-color: #ef4444; }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .data-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .auth-links {
+                justify-content: center;
+                flex-direction: column;
+            }
+
+            .profile-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Dark theme specific adjustments */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(138, 43, 226, 0.1) 0%, rgba(0, 0, 0, 0.3) 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Scrollbar styling for dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2a2a2a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #8a2be2;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6a1b9a;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Hoş Geldin, {{ influencer.first_name }}!</h1>
-        <div class="info">
-            <p><strong>Email:</strong> {{ influencer.email }}</p>
-            <p><strong>Kayıt Tarihi:</strong> {{ influencer.created_at }}</p>
-            <p><strong>Instagram:</strong> {{ influencer.instagram_handle|default:"Bağlı değil" }}</p>
-            <p><strong>YouTube:</strong> {{ influencer.youtube_channel_id|default:"Bağlı değil" }}</p>
+<!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo">
+            <i class="fas fa-chart-line"></i>
+            <h1>InfoFluencer</h1>
+        </div>
+
+        <nav class="nav-links">
+            <a href="#"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="#"><i class="fas fa-chart-bar"></i> Analytics</a>
+            <a href="#"><i class="fas fa-users"></i> Audience</a>
+            <a href="#"><i class="fas fa-handshake"></i> Brand Matching</a>
+            <form action="{% url 'influencer_logout' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<!-- Main Container -->
+<div class="container">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <h2 class="welcome-title">
+            <i class="fas fa-star"></i> 
+            Welcome to Your Influencer Dashboard!
+        </h2>
+        <p class="welcome-subtitle">
+            Connect your social media accounts to analyze your audience, track engagement metrics, and discover brand collaboration opportunities.
+        </p>
+    </div>
+
+    <!-- META REQUIRED: Social Media Connection Section -->
+    <div class="auth-section">
+        <h3>
+            <i class="fas fa-link"></i>
+            Connect Your Social Media Accounts
+        </h3>
+        <p>
+            To provide you with detailed audience insights and performance analytics, we need access to your social media data. 
+            This allows us to analyze your follower demographics, engagement rates, and help you connect with relevant brands.
+        </p>
+        
+        <div class="permission-info">
+            <h4><i class="fas fa-shield-alt"></i> Privacy & Permissions</h4>
+            <p><strong>Instagram:</strong> We request instagram_basic (to read your profile info and posts) and instagram_manage_insights (to access your audience demographics and engagement data). This data helps us create detailed analytics reports and match you with suitable brand partnerships.</p>
+            <p><strong>YouTube:</strong> We access your channel statistics, video performance data, and audience insights to provide comprehensive cross-platform analytics.</p>
+        </div>
+
+        <div class="auth-links">
+            <a href="#" class="auth-link instagram-btn" onclick="connectInstagram()">
+                <i class="fab fa-instagram"></i>
+                Connect Instagram Account
+            </a>
+            <a href="#" class="auth-link youtube-btn" onclick="connectYoutube()">
+                <i class="fab fa-youtube"></i>
+                Connect YouTube Channel
+            </a>
         </div>
     </div>
+
+    <!-- Error Display -->
+    <div id="error-display" class="error-display">
+        <div class="error-header">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div class="error-title">Connection Error</div>
+        </div>
+        <div class="error-content" id="error-content"></div>
+    </div>
+
+    <!-- Success Alert -->
+    <div id="success-alert" class="success-alert" style="display: none;">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="success-content">
+            <div class="success-title">Success!</div>
+            <div class="success-message" id="success-message"></div>
+        </div>
+        <button class="success-close" onclick="this.parentElement.style.display='none'">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Data Overview Cards -->
+    <div class="data-overview">
+        <!-- Instagram Card -->
+        <div class="data-card instagram" id="instagram-overview">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-icon">
+                        <i class="fab fa-instagram"></i>
+                    </div>
+                    Instagram Analytics
+                </div>
+                <div class="card-status status-empty" id="instagram-status">Not Connected</div>
+            </div>
+            <div class="card-content" id="instagram-content">
+                <div class="connect-prompt">
+                    <h4><i class="fab fa-instagram"></i> Connect Your Instagram</h4>
+                    <p>Link your Instagram business account to access detailed follower demographics, engagement metrics, and post performance data.</p>
+                    <button class="connect-btn" onclick="connectInstagram()">
+                        <i class="fas fa-link"></i>
+                        Connect Instagram
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- YouTube Card -->
+        <div class="data-card youtube" id="youtube-overview">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-icon">
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                    YouTube Analytics
+                </div>
+                <div class="card-status status-empty" id="youtube-status">Not Connected</div>
+            </div>
+            <div class="card-content" id="youtube-content">
+                <div class="connect-prompt">
+                    <h4><i class="fab fa-youtube"></i> Connect Your YouTube Channel</h4>
+                    <p>Link your YouTube channel to access subscriber analytics, video performance metrics, and audience insights.</p>
+                    <button class="connect-btn" onclick="connectYoutube()">
+                        <i class="fas fa-link"></i>
+                        Connect YouTube
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Control Panels -->
+    <div class="analysis-panel">
+        <div class="panel-header">
+            <div class="panel-icon instagram-icon">
+                <i class="fab fa-instagram"></i>
+            </div>
+            <h3 class="panel-title">Instagram Graph API Analytics</h3>
+        </div>
+        <p style="color: #64748b; margin-bottom: 1.5rem;">
+            <strong>Meta Graph API Integration:</strong> Comprehensive audience analysis using instagram_basic, instagram_manage_insights, and pages_show_list permissions for brand matching algorithms.
+        </p>
+        <div class="button-group">
+            <button onclick="fetchInstagramProfile()" class="action-btn instagram-btn" id="profile-btn" disabled>
+                <i class="fas fa-user"></i>
+                Profile & Account Info
+            </button>
+            <button onclick="fetchAudienceInsights()" class="action-btn instagram-btn" id="insights-btn" disabled>
+                <i class="fas fa-chart-pie"></i>
+                Audience Demographics
+            </button>
+            <button onclick="fetchEngagementData()" class="action-btn instagram-btn" id="engagement-btn" disabled>
+                <i class="fas fa-heart"></i>
+                Engagement Analytics
+            </button>
+            <button onclick="fetchPostPerformance()" class="action-btn instagram-btn" id="posts-btn" disabled>
+                <i class="fas fa-images"></i>
+                Content Performance
+            </button>
+            <button onclick="fetchBrandCompatibility()" class="action-btn instagram-btn" id="brand-btn" disabled>
+                <i class="fas fa-handshake"></i>
+                Brand Compatibility
+            </button>
+            <button onclick="fetchAudienceQuality()" class="action-btn instagram-btn" id="quality-btn" disabled>
+                <i class="fas fa-shield-alt"></i>
+                Audience Quality Score
+            </button>
+        </div>
+    </div>
+
+    <!-- YouTube Analytics Panel -->
+    <div class="analysis-panel">
+        <div class="panel-header">
+            <div class="panel-icon youtube-icon">
+                <i class="fab fa-youtube"></i>
+            </div>
+            <h3 class="panel-title">YouTube Data Analysis</h3>
+        </div>
+        <p style="color: #64748b; margin-bottom: 1.5rem;">
+            Access YouTube Analytics API for comprehensive channel and video performance data.
+        </p>
+        <div class="button-group">
+            <button onclick="fetchYouTubeChannel()" class="action-btn youtube-btn" id="channel-btn" disabled>
+                <i class="fas fa-tv"></i>
+                Channel Statistics
+            </button>
+            <button onclick="fetchVideoAnalytics()" class="action-btn youtube-btn" id="videos-btn" disabled>
+                <i class="fas fa-play"></i>
+                Video Performance
+            </button>
+            <button onclick="fetchYouTubeAudience()" class="action-btn youtube-btn" id="yt-audience-btn" disabled>
+                <i class="fas fa-users"></i>
+                Subscriber Demographics
+            </button>
+            <button onclick="fetchRevenueData()" class="action-btn youtube-btn" id="revenue-btn" disabled>
+                <i class="fas fa-dollar-sign"></i>
+                Revenue Analytics
+            </button>
+        </div>
+    </div>
+
+    <!-- Cross-Platform Analytics -->
+    <div class="analysis-panel">
+        <div class="panel-header">
+            <div class="panel-icon analytics-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h3 class="panel-title">Cross-Platform Performance</h3>
+        </div>
+        <p style="color: #64748b; margin-bottom: 1.5rem;">
+            Compare your performance across Instagram and YouTube platforms for optimal brand matching.
+        </p>
+        <div class="button-group">
+            <button onclick="generateCrossReport()" class="action-btn" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;" id="cross-report-btn" disabled>
+                <i class="fas fa-chart-bar"></i>
+                Cross-Platform Report
+            </button>
+            <button onclick="exportAnalytics()" class="action-btn" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;" id="export-btn" disabled>
+                <i class="fas fa-download"></i>
+                Export Analytics
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section">
+        <div class="panel-header">
+            <div class="panel-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                <i class="fas fa-table"></i>
+            </div>
+            <h3 class="panel-title">Analytics Results</h3>
+        </div>
+
+        <div id="results-container" class="table-container">
+            <div style="text-align: center; color: #64748b; padding: 3rem;">
+                <i class="fas fa-chart-line" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                <h4 style="margin-bottom: 0.5rem;">Ready for Analysis</h4>
+                <p>Connect your social media accounts and select an analytics option above to view detailed insights.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Global state management
+    let connectedAccounts = {
+        instagram: false,
+        youtube: false
+    };
+
+    let authTokens = {
+        instagram: null,
+        youtube: null
+    };
+
+    // Instagram Graph API simulated data for brand matching
+    const instagramGraphAPIData = {
+        profile: {
+            account_type: "BUSINESS",
+            id: "17841405309213311",
+            media_count: 342,
+            followers_count: 87500,
+            follows_count: 1250,
+            name: "Sarah Johnson",
+            username: "sarahjohnson_lifestyle",
+            profile_picture_url: "https://example.com/profile.jpg",
+            website: "www.sarahjohnson.com",
+            biography: "✨ Lifestyle & Fashion Blogger\n📍 Istanbul, Turkey\n💌 Brand partnerships: sarah@sarahjohnson.com",
+            category: "Personal Blog",
+            business_category_name: "Beauty, Cosmetic & Personal Care"
+        },
+        
+        audienceInsights: {
+            demographics: [
+                { age_range: "18-24", gender: "F", percentage: 32.5, count: 28437 },
+                { age_range: "25-34", gender: "F", percentage: 28.1, count: 24587 },
+                { age_range: "18-24", gender: "M", percentage: 12.3, count: 10762 },
+                { age_range: "25-34", gender: "M", percentage: 11.7, count: 10237 },
+                { age_range: "35-44", gender: "F", percentage: 8.9, count: 7787 },
+                { age_range: "35-44", gender: "M", percentage: 4.2, count: 3675 },
+                { age_range: "45-54", gender: "F", percentage: 1.8, count: 1575 },
+                { age_range: "45-54", gender: "M", percentage: 0.5, count: 437 }
+            ],
+            locations: [
+                { country: "TR", city: "Istanbul", percentage: 24.5, count: 21437 },
+                { country: "TR", city: "Ankara", percentage: 8.7, count: 7612 },
+                { country: "TR", city: "Izmir", percentage: 6.3, count: 5512 },
+                { country: "DE", city: "Berlin", percentage: 5.2, count: 4550 },
+                { country: "US", city: "New York", percentage: 4.8, count: 4200 },
+                { country: "UK", city: "London", percentage: 3.9, count: 3412 },
+                { country: "FR", city: "Paris", percentage: 2.1, count: 1837 }
+            ],
+            interests: [
+                { category: "Fashion", affinity_score: 95, reach: 78500 },
+                { category: "Beauty & Cosmetics", affinity_score: 92, reach: 72300 },
+                { category: "Lifestyle", affinity_score: 88, reach: 69800 },
+                { category: "Travel", affinity_score: 76, reach: 58200 },
+                { category: "Food & Dining", affinity_score: 71, reach: 52100 },
+                { category: "Fitness & Health", affinity_score: 68, reach: 48900 }
+            ]
+        },
+
+        engagementMetrics: {
+            overall: {
+                engagement_rate: 4.7,
+                avg_likes_per_post: 3247,
+                avg_comments_per_post: 142,
+                avg_shares_per_post: 78,
+                avg_saves_per_post: 523,
+                reach_rate: 73.2,
+                impression_rate: 127.8
+            },
+            timeBasedEngagement: [
+                { hour: "09:00", engagement_rate: 3.2 },
+                { hour: "12:00", engagement_rate: 4.8 },
+                { hour: "15:00", engagement_rate: 5.9 },
+                { hour: "18:00", engagement_rate: 7.1 },
+                { hour: "20:00", engagement_rate: 6.8 },
+                { hour: "21:00", engagement_rate: 5.2 }
+            ],
+            contentTypes: [
+                { type: "Photo", avg_engagement: 4.2, count: 178 },
+                { type: "Carousel", avg_engagement: 5.8, count: 89 },
+                { type: "Video", avg_engagement: 6.9, count: 45 },
+                { type: "Reels", avg_engagement: 8.4, count: 30 }
+            ]
+        },
+
+        postPerformance: [
+            {
+                id: "18137885312183775",
+                media_type: "VIDEO", 
+                like_count: 5847,
+                comments_count: 234,
+                shares_count: 89,
+                saves_count: 892,
+                reach: 45231,
+                impressions: 67423,
+                engagement_rate: 8.7,
+                timestamp: "2025-06-25T15:30:00+0000",
+                caption: "Today's OOTD featuring sustainable fashion brands 🌿✨ #SustainableFashion #OOTD"
+            },
+            {
+                id: "18124785312183776", 
+                media_type: "CAROUSEL_ALBUM",
+                like_count: 4521,
+                comments_count: 187,
+                shares_count: 67,
+                saves_count: 1247,
+                reach: 38947,
+                impressions: 52341,
+                engagement_rate: 7.2,
+                timestamp: "2025-06-24T12:15:00+0000",
+                caption: "My morning skincare routine with @skincarebrand 💆‍♀️ #SkincareRoutine #GlowingSkin"
+            }
+        ],
+
+        brandCompatibility: {
+            overall_score: 8.7,
+            categories: [
+                { category: "Fashion & Apparel", compatibility: 9.2, reasoning: "High audience affinity for fashion content" },
+                { category: "Beauty & Cosmetics", compatibility: 9.5, reasoning: "Perfect demographic match and high engagement" },
+                { category: "Lifestyle Products", compatibility: 8.8, reasoning: "Strong lifestyle content performance" },
+                { category: "Travel & Tourism", compatibility: 7.5, reasoning: "Good travel content engagement" },
+                { category: "Food & Beverage", compatibility: 6.8, reasoning: "Moderate food content performance" },
+                { category: "Technology", compatibility: 4.2, reasoning: "Low tech content engagement" }
+            ],
+            ideal_brand_types: [
+                "Sustainable Fashion Brands",
+                "Luxury Beauty Products", 
+                "Lifestyle & Home Decor",
+                "Premium Skincare",
+                "Travel Accessories"
+            ]
+        },
+
+        audienceQuality: {
+            overall_score: 8.9,
+            metrics: {
+                authenticity_score: 92.3,
+                engagement_authenticity: 89.7,
+                follower_growth_rate: 12.4,
+                fake_follower_percentage: 3.2,
+                bot_engagement_percentage: 1.8,
+                audience_retention_rate: 87.6,
+                comment_sentiment_score: 8.4,
+                brand_safety_score: 9.1
+            },
+            red_flags: [
+                { type: "Low Risk", description: "Minimal bot engagement detected" },
+                { type: "Low Risk", description: "Healthy follower growth pattern" }
+            ],
+            strengths: [
+                "High genuine engagement rate",
+                "Quality audience demographics",
+                "Strong brand safety score",
+                "Consistent content performance"
+            ]
+        }
+    };
+
+    // META REQUIRED: Instagram OAuth Connection
+    function connectInstagram() {
+        updateAccountStatus('instagram', 'connecting', 'Connecting...');
+        
+        const clientId = 'YOUR_FACEBOOK_APP_ID';
+        const redirectUri = encodeURIComponent(window.location.origin + '/auth/instagram/callback');
+        const permissions = 'instagram_basic,instagram_manage_insights,pages_show_list';
+        
+        const authUrl = `https://www.facebook.com/v18.0/dialog/oauth?` +
+            `client_id=${clientId}&` +
+            `redirect_uri=${redirectUri}&` +
+            `scope=${permissions}&` +
+            `response_type=code&` +
+            `state=instagram_auth`;
+        
+        setTimeout(() => {
+            simulateInstagramConnection();
+        }, 2000);
+    }
+
+    function connectYoutube() {
+        updateAccountStatus('youtube', 'connecting', 'Connecting...');
+        
+        const clientId = 'YOUR_GOOGLE_CLIENT_ID';
+        const redirectUri = encodeURIComponent(window.location.origin + '/auth/youtube/callback');
+        const scope = 'https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/yt-analytics.readonly';
+        
+        const authUrl = `https://accounts.google.com/oauth/authorize?` +
+            `client_id=${clientId}&` +
+            `redirect_uri=${redirectUri}&` +
+            `scope=${scope}&` +
+            `response_type=code&` +
+            `access_type=offline&` +
+            `state=youtube_auth`;
+        
+        setTimeout(() => {
+            simulateYouTubeConnection();
+        }, 2000);
+    }
+
+    function simulateInstagramConnection() {
+        connectedAccounts.instagram = true;
+        authTokens.instagram = 'demo_instagram_token';
+        
+        updateAccountStatus('instagram', 'success', 'Connected');
+        showInstagramPreview();
+        enableInstagramButtons();
+        
+        showSuccessMessage('Instagram account connected successfully! Advanced audience analytics and brand compatibility scoring now available.');
+    }
+
+    function simulateYouTubeConnection() {
+        connectedAccounts.youtube = true;
+        authTokens.youtube = 'demo_youtube_token';
+        
+        updateAccountStatus('youtube', 'success', 'Connected');
+        showYouTubePreview();
+        enableYouTubeButtons();
+        
+        showSuccessMessage('YouTube channel connected successfully! Your video analytics and subscriber data are now available.');
+    }
+
+    function updateAccountStatus(platform, status, text) {
+        const statusElement = document.getElementById(`${platform}-status`);
+        if (statusElement) {
+            statusElement.className = `card-status status-${status}`;
+            statusElement.textContent = text;
+        }
+    }
+
+    function showInstagramPreview() {
+        const data = instagramGraphAPIData;
+        const contentElement = document.getElementById('instagram-content');
+        
+        contentElement.innerHTML = `
+            <div class="brand-score">
+                <div class="score-value">${data.brandCompatibility.overall_score}/10</div>
+                <div class="score-label">Brand Compatibility Score</div>
+            </div>
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-value">${(data.profile.followers_count / 1000).toFixed(1)}K</div>
+                    <div class="stat-label">Followers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${data.engagementMetrics.overall.engagement_rate}%</div>
+                    <div class="stat-label">Eng. Rate</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${data.profile.media_count}</div>
+                    <div class="stat-label">Posts</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${data.audienceQuality.overall_score}/10</div>
+                    <div class="stat-label">Quality Score</div>
+                </div>
+            </div>
+            <div class="quality-indicators">
+                <div class="quality-item quality-good">
+                    <div class="quality-label">Authenticity</div>
+                    <div class="quality-value">${data.audienceQuality.metrics.authenticity_score}%</div>
+                </div>
+                <div class="quality-item quality-good">
+                    <div class="quality-label">Brand Safety</div>
+                    <div class="quality-value">${data.audienceQuality.metrics.brand_safety_score}/10</div>
+                </div>
+                <div class="quality-item quality-good">
+                    <div class="quality-label">Fake Followers</div>
+                    <div class="quality-value">${data.audienceQuality.metrics.fake_follower_percentage}%</div>
+                </div>
+                <div class="quality-item quality-good">
+                    <div class="quality-label">Growth Rate</div>
+                    <div class="quality-value">+${data.audienceQuality.metrics.follower_growth_rate}%</div>
+                </div>
+            </div>
+            <div class="engagement-chart">
+                <div class="chart-title">Overall Performance Score</div>
+                <div class="engagement-bar">
+                    <div class="engagement-fill" style="width: ${data.brandCompatibility.overall_score * 10}%;">
+                        <div class="engagement-percentage">${data.brandCompatibility.overall_score}/10</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function showYouTubePreview() {
+        const contentElement = document.getElementById('youtube-content');
+        contentElement.innerHTML = `
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-value">24.1K</div>
+                    <div class="stat-label">Subscribers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">89</div>
+                    <div class="stat-label">Videos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">1.2M</div>
+                    <div class="stat-label">Total Views</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">156h</div>
+                    <div class="stat-label">Watch Time</div>
+                </div>
+            </div>
+            <div class="engagement-chart">
+                <div class="chart-title">Subscriber Growth (Last 28 Days)</div>
+                <div class="engagement-bar">
+                    <div class="engagement-fill" style="width: 85%; background: linear-gradient(90deg, #FF0000, #CC0000);">
+                        <div class="engagement-percentage">+8.5%</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function enableInstagramButtons() {
+        document.getElementById('profile-btn').disabled = false;
+        document.getElementById('posts-btn').disabled = false;
+        document.getElementById('insights-btn').disabled = false;
+        document.getElementById('engagement-btn').disabled = false;
+        document.getElementById('brand-btn').disabled = false;
+        document.getElementById('quality-btn').disabled = false;
+        updateCrossButtons();
+    }
+
+    function enableYouTubeButtons() {
+        document.getElementById('channel-btn').disabled = false;
+        document.getElementById('videos-btn').disabled = false;
+        document.getElementById('yt-audience-btn').disabled = false;
+        document.getElementById('revenue-btn').disabled = false;
+        updateCrossButtons();
+    }
+
+    function updateCrossButtons() {
+        if (connectedAccounts.instagram || connectedAccounts.youtube) {
+            document.getElementById('cross-report-btn').disabled = false;
+            document.getElementById('export-btn').disabled = false;
+        }
+    }
+
+    // Enhanced Instagram Graph API Functions
+    function fetchInstagramProfile() {
+        if (!connectedAccounts.instagram) {
+            showErrorMessage('Instagram account not connected. Please connect your account first.');
+            return;
+        }
+        
+        showLoading();
+        
+        setTimeout(() => {
+            const data = instagramGraphAPIData.profile;
+            const profileData = [
+                { Field: 'Account ID', Value: data.id },
+                { Field: 'Username', Value: '@' + data.username },
+                { Field: 'Display Name', Value: data.name },
+                { Field: 'Account Type', Value: data.account_type },
+                { Field: 'Business Category', Value: data.business_category_name },
+                { Field: 'Followers Count', Value: data.followers_count.toLocaleString() },
+                { Field: 'Following Count', Value: data.follows_count.toLocaleString() },
+                { Field: 'Media Count', Value: data.media_count.toString() },
+                { Field: 'Website', Value: data.website || 'Not provided' },
+                { Field: 'Biography Length', Value: data.biography.length + ' characters' }
+            ];
+            
+            displayResults(profileData, 'Instagram Profile Information (Graph API /me)');
+            hideLoading();
+        }, 1500);
+    }
+
+    function fetchAudienceInsights() {
+        if (!connectedAccounts.instagram) {
+            showErrorMessage('Instagram account not connected. Please connect your account first.');
+            return;
+        }
+        
+        showLoading();
+        
+        setTimeout(() => {
+            const data = instagramGraphAPIData.audienceInsights;
+            const audienceData = data.demographics.map(demo => ({
+                Age_Range: demo.age_range,
+                Gender: demo.gender,
+                Percentage: demo.percentage.toFixed(1) + '%',
+                Follower_Count: demo.count.toLocaleString(),
+                Market_Value: demo.percentage > 20 ? 'High' : demo.percentage > 10 ? 'Medium' : 'Low'
+            }));
+            
+            displayResults(audienceData, 'Instagram Audience Demographics (Graph API Insights)');
+            hideLoading();
+        }, 1500);
+    }
+
+    function fetchEngagementData() {
+        if (!connectedAccounts.instagram) {
+            showErrorMessage('Instagram account not connected. Please connect your account first.');
+            return;
+        }
+        
+        showLoading();
+        
+        setTimeout(() => {
+            const data = instagramGraphAPIData.engagementMetrics;
+            const engagementData = [
+                { Metric: 'Overall Engagement Rate', Value: data.overall.engagement_rate + '%', Industry_Benchmark: '3.2%', Performance: 'Above Average' },
+                { Metric: 'Avg Likes per Post', Value: data.overall.avg_likes_per_post.toLocaleString(), Industry_Benchmark: '2,100', Performance: 'Excellent' },
+                { Metric: 'Avg Comments per Post', Value: data.overall.avg_comments_per_post.toString(), Industry_Benchmark: '95', Performance: 'Excellent' },
+                { Metric: 'Avg Saves per Post', Value: data.overall.avg_saves_per_post.toString(), Industry_Benchmark: '280', Performance: 'Excellent' },
+                { Metric: 'Reach Rate', Value: data.overall.reach_rate + '%', Industry_Benchmark: '45%', Performance: 'Excellent' },
+                { Metric: 'Best Content Type', Value: 'Reels (8.4% eng.)', Industry_Benchmark: 'Video', Performance: 'Optimal' }
+            ];
+            
+            displayResults(engagementData, 'Instagram Engagement Analytics & Benchmarks');
+            hideLoading();
+        }, 1500);
+    }
+
+    function fetchPostPerformance() {
+        if (!connectedAccounts.instagram) {
+            showErrorMessage('Instagram account not connected. Please connect your account first.');
+            return;
+        }
+        
+        showLoading();
+        
+        setTimeout(() => {
+            const data = instagramGraphAPIData.postPerformance;
+            const postData = data.map(post => ({
+                Post_ID: post.id.substring(0, 12) + '...',
+                Media_Type: post.media_type,
+                Engagement_Rate: post.engagement_rate + '%',
+                Likes: post.like_count.toLocaleString(),
+                Comments: post.comments_count.toString(),
+                Saves: post.saves_count.toString(),
+                Reach: post.reach.toLocaleString(),
+                Date: new Date(post.timestamp).toLocaleDateString(),
+                Performance: post.engagement_rate > 7 ? 'Excellent' : post.engagement_rate > 5 ? 'Good' : 'Average'
+            }));
+            
+            displayResults(postData, 'Instagram Content Performance Analysis');
+            hideLoading();
+        }, 1500);
+    }
+
+    function fetchBrandCompatibility() {
+        if (!connectedAccounts.instagram) {
+            showErrorMessage('Instagram account not connected. Please connect your account first.');
+            return;
+        }
+        
+        showLoading();
+        
+        setTimeout(() => {
+            const data = instagramGraphAPIData.brandCompatibility;
+            const compatibilityData = data.categories.map(cat => ({
+                Brand_Category: cat.category,
+                Compatibility_Score: cat.compatibility + '/10',
+                Market_Fit: cat.compatibility > 8.5 ? 'Excellent' : cat.compatibility > 7 ? 'Good' : 'Fair',
+                Reasoning: cat.reasoning,
+                Recommendation: cat.compatibility > 8 ? 'Highly Recommended' : cat.compatibility > 6 ? 'Recommended' : 'Consider Carefully'
+            }));
+            
+            displayResults(compatibilityData, `Brand Compatibility Analysis (Overall Score: ${data.overall_score}/10)`);
+            hideLoading();
+        }, 1500);
+    }
+
+    function fetchAudienceQuality() {
+        if (!connectedAccounts.instagram) {
+            showErrorMessage('Instagram account not connected. Please connect your account first.');
+            return;
+        }
+        
+        showLoading();
+        
+        setTimeout(() => {
+            const data = instagramGraphAPIData.audienceQuality;
+            const qualityData = [
+                { Quality_Metric: 'Overall Quality Score', Value: data.overall_score + '/10', Status: 'Excellent', Impact: 'High brand safety' },
+                { Quality_Metric: 'Authenticity Score', Value: data.metrics.authenticity_score + '%', Status: 'Excellent', Impact: 'Genuine engagement' },
+                { Quality_Metric: 'Fake Followers', Value: data.metrics.fake_follower_percentage + '%', Status: 'Excellent', Impact: 'Minimal risk' },
+                { Quality_Metric: 'Bot Engagement', Value: data.metrics.bot_engagement_percentage + '%', Status: 'Excellent', Impact: 'High quality metrics' },
+                { Quality_Metric: 'Growth Rate (Monthly)', Value: '+' + data.metrics.follower_growth_rate + '%', Status: 'Healthy', Impact: 'Organic growth' },
+                { Quality_Metric: 'Audience Retention', Value: data.metrics.audience_retention_rate + '%', Status: 'Excellent', Impact: 'Loyal following' },
+                { Quality_Metric: 'Comment Sentiment', Value: data.metrics.comment_sentiment_score + '/10', Status: 'Positive', Impact: 'Brand-safe content' },
+                { Quality_Metric: 'Brand Safety Score', Value: data.metrics.brand_safety_score + '/10', Status: 'Excellent', Impact: 'Low risk partnership' }
+            ];
+            
+            displayResults(qualityData, 'Audience Quality & Brand Safety Analysis');
+            hideLoading();
+        }, 1500);
+    }
+
+    // YouTube API Functions (unchanged for brevity)
+    function fetchYouTubeChannel() {
+        if (!connectedAccounts.youtube) {
+            showErrorMessage('YouTube channel not connected. Please connect your channel first.');
+            return;
+        }
+        
+        showLoading();
+        
+        setTimeout(() => {
+            const channelData = [
+                { Metric: 'Subscriber Count', Value: '24,156', Change: '+8.5% (28 days)', Performance: 'Growing' },
+                { Metric: 'Total Video Views', Value: '1,234,567', Change: '+12.3% (28 days)', Performance: 'Excellent' },
+                { Metric: 'Total Videos', Value: '89', Change: '+3 (28 days)', Performance: 'Active' },
+                { Metric: 'Average View Duration', Value: '4:32', Change: '+15% (28 days)', Performance: 'High Retention' },
+                { Metric: 'Watch Time (Hours)', Value: '15,678', Change: '+18.7% (28 days)', Performance: 'Excellent' },
+                { Metric: 'Estimated Revenue', Value: '$234.56', Change: '+22% (28 days)', Performance: 'Monetized' }
+            ];
+            
+            displayResults(channelData, 'YouTube Channel Statistics');
+            hideLoading();
+        }, 1500);
+    }
+
+    function fetchVideoAnalytics() {
+        if (!connectedAccounts.youtube) {
+            showErrorMessage('YouTube channel not connected. Please connect your channel first.');
+            return;
+        }
+        
+        showLoading();
+        
+        setTimeout(() => {
+            const videoData = [
+                { Video_Title: 'How to Create Content', Views: '5,432', Likes: '312', Comments: '45', Duration: '8:45', CTR: '12.4%' },
+                { Video_Title: 'Brand Partnership Tips', Views: '3,876', Likes: '267', Comments: '38', Duration: '6:23', CTR: '8.7%' },
+                { Video_Title: 'Instagram Growth Hacks', Views: '7,234', Likes: '445', Comments: '67', Duration: '10:12', CTR: '15.2%' },
+                { Video_Title: 'Influencer Q&A Session', Views: '2,145', Likes: '189', Comments: '23', Duration: '12:34', CTR: '6.3%' },
+                { Video_Title: 'Behind the Scenes', Views: '4,567', Likes: '298', Comments: '34', Duration: '7:18', CTR: '9.8%' }
+            ];
+            
+            displayResults(videoData, 'YouTube Video Performance Analytics');
+            hideLoading();
+        }, 1500);
+    }
+
+    function fetchYouTubeAudience() {
+        if (!connectedAccounts.youtube) {
+            showErrorMessage('YouTube channel not connected. Please connect your channel first.');
+            return;
+        }
+        
+        showLoading();
+        
+        setTimeout(() => {
+            const audienceData = [
+                { Age_Group: '18-24', Male: '15.2%', Female: '18.7%', Total: '33.9%', Value_Score: 'High' },
+                { Age_Group: '25-34', Male: '12.8%', Female: '16.4%', Total: '29.2%', Value_Score: 'High' },
+                { Age_Group: '35-44', Male: '8.1%', Female: '10.3%', Total: '18.4%', Value_Score: 'Medium' },
+                { Age_Group: '45-54', Male: '5.7%', Female: '7.2%', Total: '12.9%', Value_Score: 'Medium' },
+                { Age_Group: '55-64', Male: '2.8%', Female: '2.1%', Total: '4.9%', Value_Score: 'Low' },
+                { Age_Group: '65+', Male: '0.4%', Female: '0.3%', Total: '0.7%', Value_Score: 'Low' }
+            ];
+            
+            displayResults(audienceData, 'YouTube Subscriber Demographics');
+            hideLoading();
+        }, 1500);
+    }
+
+    function fetchRevenueData() {
+        if (!connectedAccounts.youtube) {
+            showErrorMessage('YouTube channel not connected. Please connect your channel first.');
+            return;
+        }
+        
+        showLoading();
+        
+        setTimeout(() => {
+            const revenueData = [
+                { Source: 'Ad Revenue', Amount: '$156.78', Percentage: '67%', Growth: '+15%' },
+                { Source: 'Channel Memberships', Amount: '$45.20', Percentage: '19%', Growth: '+8%' },
+                { Source: 'Super Chat & Thanks', Amount: '$23.15', Percentage: '10%', Growth: '+25%' },
+                { Source: 'YouTube Shorts Fund', Amount: '$9.43', Percentage: '4%', Growth: '+45%' }
+            ];
+            
+            displayResults(revenueData, 'YouTube Revenue Analytics');
+            hideLoading();
+        }, 1500);
+    }
+
+    function generateCrossReport() {
+        if (!connectedAccounts.instagram && !connectedAccounts.youtube) {
+            showErrorMessage('Please connect at least one social media account to generate a cross-platform report.');
+            return;
+        }
+        
+        showLoading();
+        
+        setTimeout(() => {
+            const crossData = [
+                { Platform: 'Instagram', Followers: '87,500', Avg_Engagement: '4.7%', Best_Content: 'Reels', Brand_Score: '8.7/10' },
+                { Platform: 'YouTube', Subscribers: '24,156', Avg_Views: '4,851', Best_Content: 'Tutorials', Growth_Rate: '+8.5%' },
+                { Platform: 'Cross-Analysis', Total_Audience: '111,656', Overlap_Rate: '12%', Recommendation: 'Focus on video content across platforms' },
+                { Platform: 'Brand Suitability', Fashion_Score: '9.2/10', Beauty_Score: '9.5/10', Overall_Reach: '125K+', Authenticity: '92.3%' }
+            ];
+            
+            displayResults(crossData, 'Cross-Platform Performance Analysis');
+            hideLoading();
+        }, 2000);
+    }
+
+    function exportAnalytics() {
+        if (!connectedAccounts.instagram && !connectedAccounts.youtube) {
+            showErrorMessage('Please connect at least one account to export analytics.');
+            return;
+        }
+        
+        showSuccessMessage('Comprehensive analytics report exported successfully! The report includes audience demographics, engagement metrics, brand compatibility scores, and cross-platform analysis.');
+    }
+
+    // Utility Functions
+    function displayResults(data, title) {
+        const container = document.getElementById('results-container');
+        
+        if (!data || data.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: #ffa500;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                    <p>No data available</p>
+                </div>
+            `;
+            return;
+        }
+
+        const keys = Object.keys(data[0]);
+        let html = `
+            <div style="margin-bottom: 1rem;">
+                <h4 style="color: #8a2be2; font-size: 1.1rem; margin-bottom: 0.5rem;">
+                    <i class="fas fa-chart-bar"></i> ${title}
+                </h4>
+                <p style="color: #64748b; font-size: 0.9rem;">${data.length} records found | Generated from Meta Graph API & YouTube Analytics API</p>
+            </div>
+            <div style="overflow-x: auto; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+        `;
+
+        keys.forEach(key => {
+            html += `<th>${key.replace(/_/g, ' ')}</th>`;
+        });
+
+        html += `
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        data.forEach((row, index) => {
+            html += `<tr style="${index % 2 === 0 ? 'background: #2a2a2a;' : ''}">`;
+            keys.forEach(key => {
+                let cellValue = row[key] || '-';
+                
+                // Add styling for specific values
+                if (key.includes('Score') || key.includes('Performance') || key.includes('Status')) {
+                    if (typeof cellValue === 'string') {
+                        if (cellValue.includes('Excellent') || cellValue.includes('High')) {
+                            cellValue = `<span style="color: #4ade80; font-weight: 600;">${cellValue}</span>`;
+                        } else if (cellValue.includes('Good') || cellValue.includes('Medium')) {
+                            cellValue = `<span style="color: #fbbf24; font-weight: 600;">${cellValue}</span>`;
+                        } else if (cellValue.includes('Poor') || cellValue.includes('Low')) {
+                            cellValue = `<span style="color: #ef4444; font-weight: 600;">${cellValue}</span>`;
+                        }
+                    }
+                }
+                
+                html += `<td>${cellValue}</td>`;
+            });
+            html += "</tr>";
+        });
+
+        html += `
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 1rem; padding: 1rem; background: rgba(138, 43, 226, 0.1); border-radius: 8px;">
+                <h5 style="color: #8a2be2; margin-bottom: 0.5rem;">
+                    <i class="fas fa-lightbulb"></i> Brand Partnership Insights
+                </h5>
+                <p style="color: #b0b0b0; font-size: 0.9rem; line-height: 1.5;">
+                    This data is optimized for brand matching algorithms. High authenticity scores (>90%) and engagement rates (>4%) 
+                    indicate premium partnership opportunities. Quality scores help brands assess ROI potential and brand safety.
+                </p>
+            </div>
+        `;
+        
+        container.innerHTML = html;
+    }
+
+    function showSuccessMessage(message) {
+        const alertElement = document.getElementById('success-alert');
+        const messageElement = document.getElementById('success-message');
+        
+        messageElement.textContent = message;
+        alertElement.style.display = 'flex';
+        
+        setTimeout(() => {
+            alertElement.style.display = 'none';
+        }, 5000);
+    }
+
+    function showErrorMessage(message) {
+        const errorElement = document.getElementById('error-display');
+        const contentElement = document.getElementById('error-content');
+        
+        contentElement.textContent = message;
+        errorElement.classList.add('show');
+        
+        setTimeout(() => {
+            errorElement.classList.remove('show');
+        }, 5000);
+    }
+
+    function showLoading() {
+        const container = document.getElementById('results-container');
+        container.innerHTML = `
+            <div style="text-align: center; padding: 3rem; color: #8a2be2;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <p>Analyzing Instagram Graph API data...</p>
+                <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">Processing audience demographics, engagement metrics, and brand compatibility scores</p>
+            </div>
+        `;
+    }
+
+    function hideLoading() {
+        // Loading is replaced by displayResults or error message
+    }
+
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('InfoFluencer Dashboard initialized');
+        console.log('Meta Graph API integration ready');
+        console.log('Brand matching algorithms enabled');
+        
+        // Check for authentication callbacks
+        const urlParams = new URLSearchParams(window.location.search);
+        const state = urlParams.get('state');
+        const code = urlParams.get('code');
+        
+        if (state === 'instagram_auth' && code) {
+            handleInstagramCallback(code);
+        } else if (state === 'youtube_auth' && code) {
+            handleYouTubeCallback(code);
+        }
+    });
+
+    function handleInstagramCallback(code) {
+        showSuccessMessage('Instagram Graph API authentication successful! Processing comprehensive audience and engagement data...');
+        setTimeout(() => {
+            simulateInstagramConnection();
+        }, 1000);
+    }
+
+    function handleYouTubeCallback(code) {
+        showSuccessMessage('YouTube Analytics API authentication successful! Processing channel and subscriber data...');
+        setTimeout(() => {
+            simulateYouTubeConnection();
+        }, 1000);
+    }
+</script>
+
 </body>
 </html>

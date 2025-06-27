@@ -327,14 +327,14 @@
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             if (!selectedType) {
                 e.preventDefault();
-                alert('Lütfen bir giriş türü seçin.');
+                alert('Please select a login type');
                 return;
             }
             
             // Add loading animation
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.classList.add('loading');
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yönlendiriliyor...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirecting...';
         });
 
         // Add keyboard navigation

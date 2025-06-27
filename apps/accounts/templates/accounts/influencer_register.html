@@ -2,57 +2,671 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Influencer Kayıt</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Influencer Kayıt - Analytics Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f1ff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        form {
-            background-color: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 0 12px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        input, button {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+        * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
-        button {
-            background-color: #9c27b0;
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b4d 50%, #1a1a1a 100%);
+            min-height: 100vh;
+            color: #e5e5e5;
+        }
+
+        /* Dark theme background effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(138, 43, 226, 0.1) 0%, rgba(0, 0, 0, 0.3) 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Header Styles */
+        .header {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo h1 {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: #8a2be2;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        /* Registration Form Section */
+        .registration-section {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 12px 40px rgba(138, 43, 226, 0.3);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .registration-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a, #dc143c);
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #e5e5e5;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .section-icon {
+            font-size: 1.8rem;
+            padding: 10px;
+            border-radius: 10px;
             color: white;
-            font-weight: bold;
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+        }
+
+        .section-subtitle {
+            color: #b0b0b0;
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* Error Messages */
+        .error-section {
+            background: rgba(220, 20, 60, 0.1);
+            border: 1px solid rgba(220, 20, 60, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .error-title {
+            color: #dc143c;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .error-list {
+            list-style: none;
+        }
+
+        .error-list li {
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* Form Styles */
+        .registration-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            color: #e5e5e5;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-label i {
+            color: #8a2be2;
+            width: 16px;
+        }
+
+        .form-input {
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            color: #e5e5e5;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #8a2be2;
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+            background: rgba(50, 50, 50, 0.9);
+        }
+
+        .form-input::placeholder {
+            color: #888;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-select {
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            color: #e5e5e5;
+            font-size: 1rem;
+            transition: all 0.3s ease;
             cursor: pointer;
         }
-        button:hover {
-            background-color: #6a1b9a;
+
+        .form-select:focus {
+            outline: none;
+            border-color: #8a2be2;
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+        }
+
+        .form-select option {
+            background: #2a2a2a;
+            color: #e5e5e5;
+        }
+
+        /* Checkbox Styles */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .custom-checkbox {
+            position: relative;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .custom-checkbox input[type="checkbox"] {
+            opacity: 0;
+            position: absolute;
+        }
+
+        .checkbox-indicator {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(138, 43, 226, 0.5);
+            border-radius: 4px;
+            background: rgba(40, 40, 40, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin-right: 0.75rem;
+        }
+
+        .custom-checkbox input[type="checkbox"]:checked + .checkbox-indicator {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            border-color: #8a2be2;
+        }
+
+        .custom-checkbox input[type="checkbox"]:checked + .checkbox-indicator::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .checkbox-label {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .checkbox-label a {
+            color: #8a2be2;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .checkbox-label a:hover {
+            text-decoration: underline;
+        }
+
+        /* Submit Button */
+        .submit-button {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: white;
+            padding: 1.2rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
+            margin-top: 1rem;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.6);
+        }
+
+        .submit-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Login Link */
+        .login-link {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(138, 43, 226, 0.2);
+        }
+
+        .login-link p {
+            color: #b0b0b0;
+            margin-bottom: 1rem;
+        }
+
+        .login-button {
+            background: linear-gradient(135deg, #dc143c, #b91c3c);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 20, 60, 0.5);
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2a2a2a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #8a2be2;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6a1b9a;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                margin: 1rem auto;
+            }
+            
+            .registration-section {
+                padding: 2rem 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .checkbox-group {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <form method="POST">
-        {% csrf_token %}
-        <h2>Influencer Kayıt</h2>
-        <input type="text" name="first_name" placeholder="First Name" required>
-        <input type="text" name="last_name" placeholder="Last Name" required>
-        <input type="email" name="email" placeholder="E-mail" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <input type="password" name="confirm_password" placeholder="Re-Password" required>
-        <button type="submit">Sign Up</button>
-    </form>
+   <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-star"></i>
+                <h1>Influencer Platform</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="registration-section">
+            <h2 class="section-title">
+                <i class="fas fa-star section-icon"></i>
+                Influencer Registration
+            </h2>
+            <p class="section-subtitle">
+                Join our influencer network. Create your account to start collaborating with top brands.
+            </p>
+
+            <!-- Error Messages Section -->
+            {% if errors %}
+            <div class="error-section">
+                <div class="error-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Errors occurred during registration:
+                </div>
+                <ul class="error-list">
+                    {% for error in errors %}
+                    <li>
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ error }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Registration Form -->
+            <form class="registration-form" id="registrationForm" method="POST">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label class="form-label" for="first_name">
+                        <i class="fas fa-user"></i>
+                        First Name
+                    </label>
+                    <input type="text" id="first_name" name="first_name" class="form-input" placeholder="Enter your first name" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="last_name">
+                        <i class="fas fa-user"></i>
+                        Last Name
+                    </label>
+                    <input type="text" id="last_name" name="last_name" class="form-input" placeholder="Enter your last name" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">
+                        <i class="fas fa-envelope"></i>
+                        Email Address
+                    </label>
+                    <input type="email" id="email" name="email" class="form-input" placeholder="influencer@example.com" required>
+                </div>
+
+                <!-- Optional Fields for Influencers -->
+                <!--
+                <div class="form-group">
+                    <label class="form-label" for="username">
+                        <i class="fas fa-at"></i>
+                        Username/Handle
+                    </label>
+                    <input type="text" id="username" name="username" class="form-input" placeholder="@yourusername">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="platform">
+                        <i class="fas fa-share-alt"></i>
+                        Primary Platform
+                    </label>
+                    <select id="platform" name="platform" class="form-select" required>
+                        <option value="">Select your main platform</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="twitter">Twitter</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="twitch">Twitch</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="followers">
+                        <i class="fas fa-users"></i>
+                        Follower Count
+                    </label>
+                    <select id="followers" name="followers" class="form-select" required>
+                        <option value="">Select follower range</option>
+                        <option value="1k-10k">1K - 10K</option>
+                        <option value="10k-50k">10K - 50K</option>
+                        <option value="50k-100k">50K - 100K</option>
+                        <option value="100k-500k">100K - 500K</option>
+                        <option value="500k-1m">500K - 1M</option>
+                        <option value="1m+">1M+</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="niche">
+                        <i class="fas fa-tags"></i>
+                        Content Niche
+                    </label>
+                    <select id="niche" name="niche" class="form-select" required>
+                        <option value="">Select your niche</option>
+                        <option value="lifestyle">Lifestyle</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="beauty">Beauty</option>
+                        <option value="fitness">Fitness</option>
+                        <option value="food">Food & Cooking</option>
+                        <option value="travel">Travel</option>
+                        <option value="tech">Technology</option>
+                        <option value="gaming">Gaming</option>
+                        <option value="business">Business</option>
+                        <option value="education">Education</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="bio">
+                        <i class="fas fa-align-left"></i>
+                        Bio/Description (Optional)
+                    </label>
+                    <textarea id="bio" name="bio" class="form-input form-textarea" placeholder="Tell us about yourself and your content"></textarea>
+                </div>
+                -->
+
+                <div class="form-group">
+                    <label class="form-label" for="password">
+                        <i class="fas fa-lock"></i>
+                        Password
+                    </label>
+                    <input type="password" id="password" name="password" class="form-input" placeholder="Create a strong password" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirm_password">
+                        <i class="fas fa-lock"></i>
+                        Confirm Password
+                    </label>
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-input" placeholder="Re-enter your password" required>
+                </div>
+
+                <!-- Optional Terms and Agreements -->
+                <!--
+                <div class="checkbox-group">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" name="terms_accepted" required>
+                        <div class="checkbox-indicator"></div>
+                        <span class="checkbox-label">
+                            I have read and accept the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>.
+                        </span>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" name="brand_collaboration_consent">
+                        <div class="checkbox-indicator"></div>
+                        <span class="checkbox-label">
+                            I agree to be contacted by brands for collaboration opportunities.
+                        </span>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" name="marketing_consent">
+                        <div class="checkbox-indicator"></div>
+                        <span class="checkbox-label">
+                            I want to receive platform updates and opportunities via email.
+                        </span>
+                    </label>
+                </div>
+                -->
+
+                <button type="submit" class="submit-button">
+                    <i class="fas fa-user-plus"></i>
+                    Sign Up
+                </button>
+            </form>
+
+            <!-- Login Link -->
+            <div class="login-link">
+                <p>Already have an account?</p>
+                <a href="{% url 'influencer_login' %}" class="login-button">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Log In
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to show errors from Django backend
+        function showErrors(errors) {
+            // This function is only for client-side validation
+            // Django errors are handled via template rendering
+            const errorSection = document.getElementById('errorSection');
+            const errorList = document.getElementById('errorList');
+            
+            if (errors && errors.length > 0) {
+                errorList.innerHTML = '';
+                errors.forEach(error => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${error}`;
+                    errorList.appendChild(li);
+                });
+                errorSection.style.display = 'block';
+                errorSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // Form validation for client-side checks only
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('confirm_password').value;
+            const errors = [];
+            
+            // Only check password match on client side
+            if (password !== passwordConfirm) {
+                e.preventDefault();
+                errors.push('Şifreler eşleşmiyor');
+                
+                // Create temporary error section for client-side validation
+                const tempErrorSection = document.createElement('div');
+                tempErrorSection.className = 'error-section';
+                tempErrorSection.innerHTML = `
+                    <div class="error-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Form hatası:
+                    </div>
+                    <ul class="error-list">
+                        <li><i class="fas fa-exclamation-circle"></i> ${errors[0]}</li>
+                    </ul>
+                `;
+                
+                const form = document.querySelector('.registration-form');
+                form.insertBefore(tempErrorSection, form.firstChild);
+                tempErrorSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                
+                // Remove after 5 seconds
+                setTimeout(() => {
+                    tempErrorSection.remove();
+                }, 5000);
+            }
+            // If no client-side errors, let Django handle the form submission
+        });
+
+        // Error handling will be managed by Django backend
+        // No automatic error display on page load
+    </script>
 </body>
 </html>
