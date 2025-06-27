@@ -16,5 +16,6 @@ urlpatterns = [
     path('run-db-report/', views.run_db_report, name='run_db_report'),
     path('get_saved_report_data/', views.get_saved_report_data, name='get_saved_report_data'),
     path("get_initial_report_status/", views.get_initial_report_status, name="get_initial_report_status"),
+    path("match/", views.match_influencers, name="match_influencers"),
 
 ]

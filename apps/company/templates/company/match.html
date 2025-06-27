@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoFluencer - Influencer Matching</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b4d 50%, #1a1a1a 100%);
+            min-height: 100vh;
+            color: #e5e5e5;
+        }
+
+        /* Header Styles */
+        .header {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo h1 {
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: #8a2be2;
+        }
+
+        /* Navigation */
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #c0c0c0;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .nav-links a:hover {
+            color: #8a2be2;
+            background: rgba(138, 43, 226, 0.1);
+        }
+
+        .nav-links a.active {
+            color: #8a2be2;
+            background: rgba(138, 43, 226, 0.2);
+            font-weight: 600;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #8a2be2;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 80%;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #dc143c, #b91c3c);
+            border: none;
+            padding: 0.7rem 1.5rem;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.5);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .page-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #e5e5e5;
+        }
+
+        .page-title i {
+            font-size: 2.5rem;
+            color: #8a2be2;
+            padding: 12px;
+            background: rgba(138, 43, 226, 0.2);
+            border-radius: 12px;
+        }
+
+        .page-subtitle {
+            color: #b0b0b0;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Main Content Grid */
+        .main-content {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
+            min-height: 80vh;
+        }
+
+        /* Filters Sidebar */
+        .filters-sidebar {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            height: fit-content;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            position: sticky;
+            top: 120px;
+        }
+
+        .filters-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #404040;
+        }
+
+        .filters-header i {
+            font-size: 1.5rem;
+            color: #8a2be2;
+        }
+
+        .filters-header h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #e5e5e5;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-label {
+            display: block;
+            font-weight: 600;
+            color: #e5e5e5;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .filter-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #404040;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: #e5e5e5;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: #8a2be2;
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #404040;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: #e5e5e5;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #8a2be2;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: background 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            background: rgba(138, 43, 226, 0.1);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #8a2be2;
+        }
+
+        .checkbox-item label {
+            color: #c0c0c0;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .apply-filters {
+            flex: 1;
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .apply-filters:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(138, 43, 226, 0.4);
+        }
+
+        .clear-filters {
+            background: rgba(255, 255, 255, 0.1);
+            color: #c0c0c0;
+            border: 1px solid #404040;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .clear-filters:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #e5e5e5;
+        }
+
+        /* Results Area */
+        .results-area {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #404040;
+        }
+
+        .results-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .results-info i {
+            color: #8a2be2;
+            font-size: 1.2rem;
+        }
+
+        .results-count {
+            font-weight: 700;
+            color: #e5e5e5;
+            font-size: 1.1rem;
+        }
+
+        .results-text {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+        }
+
+        .sort-dropdown {
+            padding: 0.5rem 1rem;
+            border: 2px solid #404040;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: #e5e5e5;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* Influencer Cards Grid */
+        .influencers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .influencer-card {
+            background: rgba(40, 40, 40, 0.95);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(138, 43, 226, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .influencer-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(138, 43, 226, 0.3);
+            border-color: rgba(138, 43, 226, 0.4);
+        }
+
+        .influencer-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+        }
+
+        .influencer-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .influencer-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .influencer-info {
+            flex: 1;
+        }
+
+        .influencer-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #e5e5e5;
+            margin-bottom: 0.25rem;
+        }
+
+        .influencer-handle {
+            color: #8a2be2;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .influencer-category {
+            background: rgba(138, 43, 226, 0.2);
+            color: #8a2be2;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .social-platforms {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .platform-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .platform-youtube {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff4444;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+
+        .platform-instagram {
+            background: rgba(225, 48, 108, 0.2);
+            color: #e1306c;
+            border: 1px solid rgba(225, 48, 108, 0.3);
+        }
+
+        .platform-tiktok {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .influencer-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #8a2be2;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #b0b0b0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .match-score {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 12px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .match-percentage {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #4caf50;
+            margin-bottom: 0.25rem;
+        }
+
+        .match-label {
+            font-size: 0.8rem;
+            color: #81c784;
+            font-weight: 600;
+        }
+
+        .audience-overlap {
+            margin-bottom: 1rem;
+        }
+
+        .overlap-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #e5e5e5;
+            margin-bottom: 0.5rem;
+        }
+
+        .overlap-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .overlap-tag {
+            background: rgba(138, 43, 226, 0.2);
+            color: #b99df0;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .view-profile-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #8a2be2, #6a1b9a);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .view-profile-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(138, 43, 226, 0.4);
+        }
+
+        .contact-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #c0c0c0;
+            border: 1px solid #404040;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #e5e5e5;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #b0b0b0;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #404040;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #c0c0c0;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #8a2be2;
+        }
+
+        .loading-state i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-sidebar {
+                position: static;
+                margin-bottom: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .page-title {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .results-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .influencers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Dark theme specific adjustments */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(138, 43, 226, 0.1) 0%, rgba(0, 0, 0, 0.3) 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2a2a2a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #8a2be2;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6a1b9a;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <h1>InfoFluencer</h1>
+            </div>
+
+            <nav class="nav-links">
+                <a href="/company/dashboard/"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="/company/match/" class="active"><i class="fas fa-handshake"></i> Influencer Matching</a>
+                <a href="/company/audience/"><i class="fas fa-users"></i> Audience Analysis</a>
+                
+                <form action="/company/logout/" method="POST">
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-title">
+                <i class="fas fa-handshake"></i>
+                <div>
+                    <h1>Influencer Matching</h1>
+                    <p class="page-subtitle">
+                        Find the perfect influencers for your brand based on audience overlap and engagement metrics.
+                        Use our advanced filtering system to discover creators that align with your target demographics.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Filters Sidebar -->
+            <div class="filters-sidebar">
+                <div class="filters-header">
+                    <i class="fas fa-filter"></i>
+                    <h3>Filter Options</h3>
+                </div>
+
+                <form id="filtersForm">
+                    <div class="filter-group">
+                        <label class="filter-label">Platform</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="youtube" name="platforms" value="youtube" checked>
+                                <label for="youtube"><i class="fab fa-youtube"></i> YouTube</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="instagram" name="platforms" value="instagram" checked>
+                                <label for="instagram"><i class="fab fa-instagram"></i> Instagram</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tiktok" name="platforms" value="tiktok">
+                                <label for="tiktok"><i class="fab fa-tiktok"></i> TikTok</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label" for="category">Category</label>
+                        <select class="filter-select" id="category" name="category">
+                            <option value="">All Categories</option>
+                            <option value="lifestyle">Lifestyle</option>
+                            <option value="technology">Technology</option>
+                            <option value="fashion">Fashion</option>
+                            <option value="gaming">Gaming</option>
+                            <option value="fitness">Fitness</option>
+                            <option value="food">Food & Cooking</option>
+                            <option value="travel">Travel</option>
+                            <option value="beauty">Beauty</option>
+                            <option value="education">Education</option>
+                            <option value="entertainment">Entertainment</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label" for="followers">Follower Count</label>
+                        <select class="filter-select" id="followers" name="followers">
+                            <option value="">Any Size</option>
+                            <option value="micro">Micro (10K - 100K)</option>
+                            <option value="macro">Macro (100K - 1M)</option>
+                            <option value="mega">Mega (1M+)</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label" for="engagement">Min Engagement Rate</label>
+                        <input type="range" class="filter-input" id="engagement" name="engagement" min="0" max="10" step="0.5" value="2">
+                        <div style="text-align: center; color: #b0b0b0; font-size: 0.8rem; margin-top: 0.5rem;">
+                            <span id="engagementValue">2.0%</span>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label" for="location">Location</label>
+                        <input type="text" class="filter-input" id="location" name="location" placeholder="Enter city or country">
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Age Group</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="age1" name="age" value="13-17">
+                                <label for="age1">13-17</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="age2" name="age" value="18-24" checked>
+                                <label for="age2">18-24</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="age3" name="age" value="25-34" checked>
+                                <label for="age3">25-34</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="age4" name="age" value="35-44">
+                                <label for="age4">35-44</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="age5" name="age" value="45-54">
+                                <label for="age5">45-54</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="age6" name="age" value="55+">
+                                <label for="age6">55+</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-buttons">
+                        <button type="submit" class="apply-filters">
+                            <i class="fas fa-search"></i> Apply Filters
+                        </button>
+                        <button type="button" class="clear-filters" onclick="clearFilters()">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Results Area -->
+            <div class="results-area">
+                <div class="results-header">
+                    <div class="results-info">
+                        <i class="fas fa-users"></i>
+                        <div>
+                            <div class="results-count" id="resultsCount">24 Influencers Found</div>
+                            <div class="results-text">Based on your current filters</div>
+                        </div>
+                    </div>
+                    <select class="sort-dropdown" id="sortBy">
+                        <option value="match">Best Match</option>
+                        <option value="followers">Most Followers</option>
+                        <option value="engagement">Highest Engagement</option>
+                        <option value="recent">Recently Active</option>
+                    </select>
+                </div>
+
+                <!-- Influencers Grid -->
+                <div class="influencers-grid" id="influencersGrid">
+                    <!-- Loading State -->
+                    <div class="loading-state" id="loadingState">
+                        <i class="fas fa-spinner"></i>
+                        <h3>Finding Perfect Matches...</h3>
+                        <p>Analyzing audience overlap and engagement metrics</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample influencer data
+        const sampleInfluencers = [
+            {
+                id: 1,
+                name: "Sarah Johnson",
+                handle: "@sarahjohnson",
+                category: "lifestyle",
+                platforms: ["youtube", "instagram"],
+                followers: 250000,
+                engagement: 4.2,
+                location: "Istanbul, Turkey",
+                matchScore: 92,
+                audienceOverlap: ["18-24", "25-34", "Female", "Turkey", "Urban"],
+                avatar: "SJ"
+            },
+            {
+                id: 2,
+                name: "Tech Guru Mike",
+                handle: "@techgurumike",
+                category: "technology",
+                platforms: ["youtube", "tiktok"],
+                followers: 180000,
+                engagement: 6.8,
+                location: "Ankara, Turkey",
+                matchScore: 87,
+                audienceOverlap: ["25-34", "35-44", "Male", "Turkey", "Tech-savvy"],
+                avatar: "TM"
+            },
+            {
+                id: 3,
+                name: "Fitness Queen",
+                handle: "@fitnessqueen",
+                category: "fitness",
+                platforms: ["instagram", "youtube"],
+                followers: 95000,
+                engagement: 8.5,
+                location: "Izmir, Turkey",
+                matchScore: 78,
+                audienceOverlap: ["18-24", "25-34", "Female", "Fitness", "Health"],
+                avatar: "FQ"
+            },
+            {
+                id: 4,
+                name: "Cooking Master",
+                handle: "@cookingmaster",
+                category: "food",
+                platforms: ["youtube", "instagram"],
+                followers: 320000,
+                engagement: 5.2,
+                location: "Istanbul, Turkey",
+                matchScore: 85,
+                audienceOverlap: ["25-34", "35-44", "Food", "Turkey", "Cooking"],
+                avatar: "CM"
+            },
+            {
+                id: 5,
+                name: "Travel Explorer",
+                handle: "@travelexplorer",
+                category: "travel",
+                platforms: ["instagram", "youtube", "tiktok"],
+                followers: 450000,
+                engagement: 3.8,
+                location: "Antalya, Turkey",
+                matchScore: 74,
+                audienceOverlap: ["18-24", "25-34", "Travel", "Adventure", "Turkey"],
+                avatar: "TE"
+            },
+            {
+                id: 6,
+                name: "Gaming Pro",
+                handle: "@gamingpro",
+                category: "gaming",
+                platforms: ["youtube", "tiktok"],
+                followers: 125000,
+                engagement: 9.2,
+                location: "Bursa, Turkey",
+                matchScore: 82,
+                audienceOverlap: ["13-17", "18-24", "Male", "Gaming", "Turkey"],
+                avatar: "GP"
+            }
+        ];
+
+        let currentInfluencers = [...sampleInfluencers];
+        let isLoading = false;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeFilters();
+            setTimeout(() => {
+                hideLoading();
+                renderInfluencers(currentInfluencers);
+            }, 2000);
+        });
+
+        // Initialize filter interactions
+        function initializeFilters() {
+            // Engagement range slider
+            const engagementSlider = document.getElementById('engagement');
+            const engagementValue = document.getElementById('engagementValue');
+            
+            engagementSlider.addEventListener('input', function() {
+                engagementValue.textContent = this.value + '%';
+            });
+
+            // Form submission
+            document.getElementById('filtersForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                applyFilters();
+            });
+
+            // Sort dropdown
+            document.getElementById('sortBy').addEventListener('change', function() {
+                sortInfluencers(this.value);
+            });
+        }
+
+        // Apply filters
+        function applyFilters() {
+            showLoading();
+            
+            setTimeout(() => {
+                const formData = new FormData(document.getElementById('filtersForm'));
+                const filters = {
+                    platforms: formData.getAll('platforms'),
+                    category: formData.get('category'),
+                    followers: formData.get('followers'),
+                    engagement: parseFloat(formData.get('engagement')),
+                    location: formData.get('location'),
+                    age: formData.getAll('age')
+                };
+
+                currentInfluencers = filterInfluencers(sampleInfluencers, filters);
+                hideLoading();
+                renderInfluencers(currentInfluencers);
+                updateResultsCount(currentInfluencers.length);
+            }, 1500);
+        }
+
+        // Filter influencers based on criteria
+        function filterInfluencers(influencers, filters) {
+            return influencers.filter(influencer => {
+                // Platform filter
+                if (filters.platforms.length > 0) {
+                    const hasMatchingPlatform = filters.platforms.some(platform => 
+                        influencer.platforms.includes(platform)
+                    );
+                    if (!hasMatchingPlatform) return false;
+                }
+
+                // Category filter
+                if (filters.category && influencer.category !== filters.category) {
+                    return false;
+                }
+
+                // Followers filter
+                if (filters.followers) {
+                    const followerCount = influencer.followers;
+                    switch (filters.followers) {
+                        case 'micro':
+                            if (followerCount < 10000 || followerCount > 100000) return false;
+                            break;
+                        case 'macro':
+                            if (followerCount < 100000 || followerCount > 1000000) return false;
+                            break;
+                        case 'mega':
+                            if (followerCount < 1000000) return false;
+                            break;
+                    }
+                }
+
+                // Engagement filter
+                if (influencer.engagement < filters.engagement) {
+                    return false;
+                }
+
+                // Location filter
+                if (filters.location && !influencer.location.toLowerCase().includes(filters.location.toLowerCase())) {
+                    return false;
+                }
+
+                // Age filter (simplified - checking if any age group matches)
+                if (filters.age.length > 0) {
+                    const hasMatchingAge = filters.age.some(age => 
+                        influencer.audienceOverlap.includes(age)
+                    );
+                    if (!hasMatchingAge) return false;
+                }
+
+                return true;
+            });
+        }
+
+        // Sort influencers
+        function sortInfluencers(sortBy) {
+            switch (sortBy) {
+                case 'match':
+                    currentInfluencers.sort((a, b) => b.matchScore - a.matchScore);
+                    break;
+                case 'followers':
+                    currentInfluencers.sort((a, b) => b.followers - a.followers);
+                    break;
+                case 'engagement':
+                    currentInfluencers.sort((a, b) => b.engagement - a.engagement);
+                    break;
+                case 'recent':
+                    // For demo purposes, randomize order
+                    currentInfluencers.sort(() => Math.random() - 0.5);
+                    break;
+            }
+            renderInfluencers(currentInfluencers);
+        }
+
+        // Render influencers
+        function renderInfluencers(influencers) {
+            const grid = document.getElementById('influencersGrid');
+            
+            if (influencers.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <i class="fas fa-search"></i>
+                        <h3>No Influencers Found</h3>
+                        <p>Try adjusting your filters to find more matches.<br>
+                        Consider expanding your criteria or selecting different platforms.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = influencers.map(influencer => `
+                <div class="influencer-card">
+                    <div class="influencer-header">
+                        <div class="influencer-avatar">${influencer.avatar}</div>
+                        <div class="influencer-info">
+                            <div class="influencer-name">${influencer.name}</div>
+                            <div class="influencer-handle">${influencer.handle}</div>
+                        </div>
+                        <div class="influencer-category">${influencer.category}</div>
+                    </div>
+
+                    <div class="social-platforms">
+                        ${influencer.platforms.map(platform => `
+                            <div class="platform-badge platform-${platform}">
+                                <i class="fab fa-${platform}"></i>
+                                ${platform.charAt(0).toUpperCase() + platform.slice(1)}
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="influencer-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">${formatNumber(influencer.followers)}</div>
+                            <div class="stat-label">Followers</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${influencer.engagement}%</div>
+                            <div class="stat-label">Engagement</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${influencer.location.split(',')[0]}</div>
+                            <div class="stat-label">Location</div>
+                        </div>
+                    </div>
+
+                    <div class="match-score">
+                        <div class="match-percentage">${influencer.matchScore}%</div>
+                        <div class="match-label">Audience Match</div>
+                    </div>
+
+                    <div class="audience-overlap">
+                        <div class="overlap-title">Audience Overlap</div>
+                        <div class="overlap-tags">
+                            ${influencer.audienceOverlap.slice(0, 4).map(tag => `
+                                <span class="overlap-tag">${tag}</span>
+                            `).join('')}
+                            ${influencer.audienceOverlap.length > 4 ? 
+                                `<span class="overlap-tag">+${influencer.audienceOverlap.length - 4} more</span>` : ''
+                            }
+                        </div>
+                    </div>
+
+                    <div class="card-actions">
+                        <button class="view-profile-btn" onclick="viewProfile(${influencer.id})">
+                            <i class="fas fa-user"></i> View Profile
+                        </button>
+                        <button class="contact-btn" onclick="contactInfluencer(${influencer.id})" title="Contact">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Utility functions
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(0) + 'K';
+            }
+            return num.toString();
+        }
+
+        function updateResultsCount(count) {
+            document.getElementById('resultsCount').textContent = `${count} Influencers Found`;
+        }
+
+        function showLoading() {
+            isLoading = true;
+            document.getElementById('influencersGrid').innerHTML = `
+                <div class="loading-state" style="grid-column: 1 / -1;">
+                    <i class="fas fa-spinner"></i>
+                    <h3>Finding Perfect Matches...</h3>
+                    <p>Analyzing audience overlap and engagement metrics</p>
+                </div>
+            `;
+        }
+
+        function hideLoading() {
+            isLoading = false;
+        }
+
+        function clearFilters() {
+            document.getElementById('filtersForm').reset();
+            document.getElementById('engagementValue').textContent = '2.0%';
+            
+            // Reset checkboxes to default state
+            document.getElementById('youtube').checked = true;
+            document.getElementById('instagram').checked = true;
+            document.getElementById('age2').checked = true;
+            document.getElementById('age3').checked = true;
+            
+            currentInfluencers = [...sampleInfluencers];
+            renderInfluencers(currentInfluencers);
+            updateResultsCount(currentInfluencers.length);
+        }
+
+        // Action handlers
+        function viewProfile(influencerId) {
+            // In a real application, this would navigate to the influencer's detailed profile
+            const influencer = sampleInfluencers.find(inf => inf.id === influencerId);
+            alert(`Viewing profile for ${influencer.name}\n\nIn the real application, this would open a detailed profile page with:\n- Complete analytics\n- Audience demographics\n- Previous campaigns\n- Contact information\n- Portfolio content`);
+        }
+
+        function contactInfluencer(influencerId) {
+            // In a real application, this would open a contact modal or messaging system
+            const influencer = sampleInfluencers.find(inf => inf.id === influencerId);
+            alert(`Contact ${influencer.name}\n\nIn the real application, this would:\n- Open a messaging interface\n- Send a collaboration request\n- Start a negotiation process\n- Create a campaign proposal`);
+        }
+
+        // Demo: Auto-refresh data every 30 seconds (disabled for demo)
+        // setInterval(() => {
+        //     if (!isLoading) {
+        //         // Simulate small changes in engagement rates
+        //         currentInfluencers.forEach(influencer => {
+        //             influencer.engagement += (Math.random() - 0.5) * 0.2;
+        //             influencer.engagement = Math.max(0, Math.min(10, influencer.engagement));
+        //             influencer.engagement = Math.round(influencer.engagement * 10) / 10;
+        //         });
+        //         renderInfluencers(currentInfluencers);
+        //     }
+        // }, 30000);
+    </script>
+</body>
+</html>

@@ -63,6 +63,11 @@ def company_dashboard(request):
         "youtube_veri_listesi": youtube_veri_listesi
     })
 
+@login_required(login_url='company_login')
+def match_influencers(request):
+    return render(request, "company/match.html")
+
+
 @login_required
 def ga4_auth_start(request):
     flow = Flow.from_client_config(
