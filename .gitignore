@@ -10,3 +10,5 @@ venv/
 .idea/
 .history/
 statics/
+.DS_Store
+mynenv/
